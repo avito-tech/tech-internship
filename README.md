@@ -15,7 +15,7 @@
 - [Наш YouTube](https://www.youtube.com/avitotech)
 
 ## Разделы в репозитории
-- [Стажировка для разработчиков](Tech_Internship)
+- [Стажировка для разработчиков](Tech_Internships)
 
 ## Список полезных материалов
 - [Различные книги по направлениям](https://github.com/avito-tech/playbook/blob/master/books.md)
