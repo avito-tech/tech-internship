@@ -1,0 +1,1188 @@
+€€openapi: "3.0.1"
+info:
+  title: Tender Management API
+  version: "1.0"
+  description: |
+    API для управления тендерами и предложениями. 
+
+    Основные функции API включают управление тендерами (создание, изменение, получение списка) и управление предложениями (создание, изменение, получение списка).
+servers:
+  - url: http://localhost:8080/api
+    description: Локальный сервер API
+
+paths:
+  /ping:
+    get:
+      summary: Проверка доступности сервера
+      description: |
+        Этот эндпоинт используется для проверки готовности сервера обрабатывать запросы. 
+
+        Чекер программа будет ждать первый успешный ответ и затем начнет выполнение тестовых сценариев.
+      operationId: checkServer
+      responses:
+        "200":
+          description: |
+            Сервер готов обрабатывать запросы, если отвечает "200 OK".
+            Тело ответа не важно, достаточно вернуть "ok".
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: ok
+        "400":
+          description: Неверный формат запроса или его параметры.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        "500":
+          description: Сервер не готов обрабатывать запросы, если ответ статусом 500 или любой другой, кроме 200.
+
+  /tenders:
+    get:
+      summary: Получение списка тендеров
+      description: |
+        Список тендеров с возможностью фильтрации по типу услуг.
+
+        Если фильтры не заданы, возвращаются все тендеры.
+      security:
+        - bearerAuth: []
+      operationId: getTenders
+      parameters:
+        - $ref: "#/components/parameters/paginationLimit"
+        - $ref: "#/components/parameters/paginationOffset"
+        - name: service_type
+          description: |
+            Возвращенные тендеры должны соответствовать указанным видам услуг.
+
+            Если список пустой, фильтры не применяются.
+          in: query
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/tenderServiceType"
+            example:
+              - Construction
+              - Delivery
+      responses:
+        "200":
+          description: Список тендеров, отсортированных по алфавиту по названию.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/tender"
+        "400":
+          description: Неверный формат запроса или его параметры.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        "500":
+          description: Сервер не готов обрабатывать запросы, если ответ статусом 500 или любой другой, кроме 200.
+
+  /tenders/new:
+    post:
+      summary: Создание нового тендера
+      description: Создание нового тендера с заданными параметрами.
+      security:
+        - bearerAuth: []
+      operationId: createTender
+      requestBody:
+        description: Данные нового тендера.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  $ref: "#/components/schemas/tenderName"
+                description:
+                  $ref: "#/components/schemas/tenderDescription"
+                serviceType:
+                  $ref: "#/components/schemas/tenderServiceType"
+                status:
+                  $ref: "#/components/schemas/tenderStatus"
+                organizationId:
+                  $ref: "#/components/schemas/organizationId"
+                creatorUsername:
+                  $ref: "#/components/schemas/username"
+              required:
+                - name
+                - description
+                - serviceType
+                - status
+                - organizationId
+                - creatorUsername
+      responses:
+        "200":
+          description: Тендер успешно создан. Сервер присваивает уникальный идентификатор и время создания.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tender"
+        "400":
+          description: Неверный формат запроса или его параметры.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        "401":
+          description: Пользователь не существует или некорректен.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        "500":
+          description: Сервер не готов обрабатывать запросы, если ответ статусом 500 или любой другой, кроме 200.
+
+  /tenders/my:
+    get:
+      summary: Получить тендеры пользователя
+      description: |
+        Получение списка тендеров текущего пользователя.
+
+        Для удобства использования включена поддержка пагинации.
+      security:
+        - bearerAuth: []
+      operationId: getUserTenders
+      parameters:
+        - $ref: "#/components/parameters/paginationLimit"
+        - $ref: "#/components/parameters/paginationOffset"
+        - name: username
+          in: query
+          schema:
+            $ref: "#/components/schemas/username"
+      responses:
+        "200":
+          description: Список тендеров пользователя, отсортированный по алфавиту.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/tender"
+        "400":
+          description: Неверный формат запроса или его параметры.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        "401":
+          description: Пользователь не существует или некорректен.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        "500":
+          description: Сервер не готов обрабатывать запросы, если ответ статусом 500 или любой другой, кроме 200.
+
+  /tenders/{tenderId}/status:
+    get:
+      summary: Получение текущего статуса тендера
+      description: Получить статус тендера по его уникальному идентификатору.
+      security:
+        - bearerAuth: []
+      operationId: getTenderStatus
+      parameters:
+        - name: tenderId
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/tenderId"
+        - name: username
+          in: query
+          schema:
+            $ref: "#/components/schemas/username"
+      responses:
+        "200":
+          description: Текущий статус тендера.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tenderStatus"
+        "400":
+          description: Неверный формат запроса или его параметры.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        "401":
+          description: Пользователь не существует или некорректен.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        "500":
+          description: Сервер не готов обрабатывать запросы, если ответ статусом 500 или любой другой, кроме 200.
+    put:
+      summary: Изменение статуса тендера
+      description: Изменить статус тендера по его идентификатору.
+      operationId: updateTenderStatus
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: tenderId
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/tenderId"
+        - name: status
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/tenderStatus"
+        - name: username
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/username"
+      responses:
+        "200":
+          description: Статус тендера успешно изменен.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tender"
+        "400":
+          description: Неверный формат запроса или его параметры.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        "401":
+          description: Пользователь не существует или некорректен.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        "403":
+          description: Недостаточно прав для выполнения действия.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        "404":
+          description: Тендер не найден.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        "500":
+          description: Сервер не готов обрабатывать запросы, если ответ статусом 500 или любой другой, кроме 200.
+
+  /tenders/{tenderId}/edit:
+    patch:
+      summary: Редактирование тендера
+      description: Изменение параметров существующего тендера.
+      security:
+        - bearerAuth: []
+      operationId: editTender
+      parameters:
+        - name: tenderId
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/tenderId"
+        - name: username
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/username"
+      requestBody:
+        description: |
+          Перечисление параметров и их новых значений для обновления тендера.
+
+          Если значение не передано, оно останется без изменений.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  $ref: "#/components/schemas/tenderName"
+                description:
+                  $ref: "#/components/schemas/tenderDescription"
+                serviceType:
+                  $ref: "#/components/schemas/tenderServiceType"
+      responses:
+        "200":
+          description: Тендер успешно изменен и возвращает обновленную информацию.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tender"
+        "400":
+          description: Данные неправильно сформированы или не соответствуют требованиям.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        "401":
+          description: Пользователь не существует или некорректен.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        "500":
+          description: Сервер не готов обрабатывать запросы, если ответ статусом 500 или любой другой, кроме 200.
+
+  /tenders/{tenderId}/rollback/{version}:
+    put:
+      summary: Откат версии тендера
+      description: Откатить параметры тендера к указанной версии. Это считается новой правкой, поэтому версия инкрементируется.
+      operationId: rollbackTender
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: tenderId
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/tenderId"
+        - name: version
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+          description: Номер версии, к которой нужно откатить тендер.
+        - name: username
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/username"
+      responses:
+        "200":
+          description: Тендер успешно откатан и версия инкрементирована.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tender"
+        "400":
+          description: Неверный формат запроса или его параметры.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        "401":
+          description: Пользователь не существует или некорректен.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        "403":
+          description: Недостаточно прав для выполнения действия.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        "404":
+          description: Тендер или версия не найдены.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        "500":
+          description: Сервер не готов обрабатывать запросы, если ответ статусом 500 или любой другой, кроме 200.
+
+  /bids/new:
+    post:
+      summary: Создание нового предложения
+      description: Создание предложения для существующего тендера.
+      security:
+        - bearerAuth: []
+      operationId: createBid
+      requestBody:
+        description: Данные нового предложения.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  $ref: "#/components/schemas/bidName"
+                description:
+                  $ref: "#/components/schemas/bidDescription"
+                status:
+                  $ref: "#/components/schemas/bidStatus"
+                tenderId:
+                  $ref: "#/components/schemas/tenderId"
+                organizationId:
+                  $ref: "#/components/schemas/organizationId"
+                creatorUsername:
+                  $ref: "#/components/schemas/username"
+              required:
+                - name
+                - description
+                - status
+                - tenderId
+                - organizationId
+                - creatorUsername
+      responses:
+        "200":
+          description: Предложение успешно создано. Сервер присваивает уникальный идентификатор и время создания.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/bid"
+        "400":
+          description: Неверный формат запроса или его параметры.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        "401":
+          description: Пользователь не существует или некорректен.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        "500":
+          description: Сервер не готов обрабатывать запросы, если ответ статусом 500 или любой другой, кроме 200.
+
+  /bids/my:
+    get:
+      summary: Получение списка ваших предложений
+      description: |
+        Получение списка предложений текущего пользователя.
+
+        Для удобства использования включена поддержка пагинации.
+      security:
+        - bearerAuth: []
+      operationId: getUserBids
+      parameters:
+        - $ref: "#/components/parameters/paginationLimit"
+        - $ref: "#/components/parameters/paginationOffset"
+        - name: username
+          in: query
+          schema:
+            $ref: "#/components/schemas/username"
+      responses:
+        "200":
+          description: Список предложений пользователя, отсортированный по алфавиту.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/bid"
+        "400":
+          description: Неверный формат запроса или его параметры.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        "401":
+          description: Пользователь не существует или некорректен.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        "500":
+          description: Сервер не готов обрабатывать запросы, если ответ статусом 500 или любой другой, кроме 200.
+
+  /bids/{tenderId}/list:
+    get:
+      summary: Получение списка предложений для тендера
+      description: Получение предложений, связанных с указанным тендером.
+      operationId: getBidsForTender
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: tenderId
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/tenderId"
+        - name: username
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/username"
+        - $ref: "#/components/parameters/paginationLimit"
+        - $ref: "#/components/parameters/paginationOffset"
+      responses:
+        "200":
+          description: Список предложений, отсортированный по алфавиту.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/bid"
+        "400":
+          description: Неверный формат запроса или его параметры.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        "401":
+          description: Пользователь не существует или некорректен.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        "403":
+          description: Недостаточно прав для выполнения действия.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        "404":
+          description: Тендер или предложение не найдено.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        "500":
+          description: Сервер не готов обрабатывать запросы, если ответ статусом 500 или любой другой, кроме 200.
+
+  /bids/{bidId}/status:
+    get:
+      summary: Получение текущего статуса предложения
+      description: Получить статус предложения по его уникальному идентификатору.
+      security:
+        - bearerAuth: []
+      operationId: getBidStatus
+      parameters:
+        - name: bidId
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/bidId"
+        - name: username
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/username"
+      responses:
+        "200":
+          description: Текущий статус предложения.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/bidStatus"
+        "400":
+          description: Неверный формат запроса или его параметры.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        "401":
+          description: Пользователь не существует или некорректен.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        "500":
+          description: Сервер не готов обрабатывать запросы, если ответ статусом 500 или любой другой, кроме 200.
+    put:
+      summary: Изменение статуса предложения
+      description: Изменить статус предложения по его уникальному идентификатору.
+      operationId: updateBidStatus
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: bidId
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/bidId"
+        - name: status
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/bidStatus"
+        - name: username
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/username"
+      responses:
+        "200":
+          description: Статус предложения успешно изменен.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/bid"
+        "400":
+          description: Неверный формат запроса или его параметры.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        "401":
+          description: Пользователь не существует или некорректен.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        "403":
+          description: Недостаточно прав для выполнения действия.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        "404":
+          description: Предложение не найдено.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        "500":
+          description: Сервер не готов обрабатывать запросы, если ответ статусом 500 или любой другой, кроме 200.
+
+  /bids/{bidId}/edit:
+    patch:
+      summary: Редактирование параметров предложения
+      description: Редактирование существующего предложения.
+      security:
+        - bearerAuth: []
+      operationId: editBid
+      parameters:
+        - name: bidId
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/bidId"
+        - name: username
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/username"
+      requestBody:
+        description: |
+          Перечисление параметров и их новых значений для обновления предложения.
+
+          Если значение не передано, оно останется без изменений.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  $ref: "#/components/schemas/bidName"
+                description:
+                  $ref: "#/components/schemas/bidDescription"
+      responses:
+        "200":
+          description: Предложение успешно изменено и возвращает обновленную информацию.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/bid"
+        "400":
+          description: Данные неправильно сформированы или не соответствуют требованиям.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        "401":
+          description: Пользователь не существует или некорректен.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        "500":
+          description: Сервер не готов обрабатывать запросы, если ответ статусом 500 или любой другой, кроме 200.
+
+  /bids/{bidId}/submit_decision:
+    put:
+      summary: Отправка решения по предложению
+      description: Отправить решение (одобрить или отклонить) по предложению.
+      operationId: submitBidDecision
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: bidId
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/bidId"
+        - name: decision
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/bidDecision"
+        - name: username
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/username"
+      responses:
+        "200":
+          description: Решение по предложению успешно отправлено.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/bid"
+        "400":
+          description: Решение не может быть отправлено.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        "401":
+          description: Пользователь не существует или некорректен.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        "403":
+          description: Недостаточно прав для выполнения действия.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        "404":
+          description: Предложение не найдено.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        "500":
+          description: Сервер не готов обрабатывать запросы, если ответ статусом 500 или любой другой, кроме 200.
+
+  /bids/{bidId}/feedback:
+    put:
+      summary: Отправка отзыва по предложению
+      description: Отправить отзыв по предложению.
+      operationId: submitBidFeedback
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: bidId
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/bidId"
+        - name: bidFeedback
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/bidFeedback"
+        - name: username
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/username"
+      responses:
+        "200":
+          description: Отзыв по предложению успешно отправлен.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/bid"
+        "400":
+          description: Отзыв не может быть отправлен.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        "401":
+          description: Пользователь не существует или некорректен.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        "403":
+          description: Недостаточно прав для выполнения действия.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        "404":
+          description: Предложение не найдено.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        "500":
+          description: Сервер не готов обрабатывать запросы, если ответ статусом 500 или любой другой, кроме 200.
+
+  /bids/{bidId}/rollback/{version}:
+    put:
+      summary: Откат версии предложения
+      description: Откатить параметры предложения к указанной версии. Это считается новой правкой, поэтому версия инкрементируется.
+      operationId: rollbackBid
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: bidId
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/bidId"
+        - name: version
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+          description: Номер версии, к которой нужно откатить предложение.
+        - name: username
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/username"
+      responses:
+        "200":
+          description: Предложение успешно откатано и версия инкрементирована.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/bid"
+        "400":
+          description: Неверный формат запроса или его параметры.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        "401":
+          description: Пользователь не существует или некорректен.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        "403":
+          description: Недостаточно прав для выполнения действия.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        "404":
+          description: Предложение или версия не найдены.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        "500":
+          description: Сервер не готов обрабатывать запросы, если ответ статусом 500 или любой другой, кроме 200.
+
+  /bids/{tenderId}/reviews:
+    get:
+      summary: Просмотр отзывов на прошлые предложения
+      description: Ответственный за организацию может посмотреть прошлые отзывы на предложения автора, который создал предложение для его тендера.
+      operationId: getBidReviews
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: tenderId
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/tenderId"
+        - name: authorUsername
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/username"
+          description: Имя пользователя автора предложений, отзывы на которые нужно просмотреть.
+        - name: requesterUsername
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/username"
+          description: Имя пользователя, который запрашивает отзывы.
+        - $ref: "#/components/parameters/paginationLimit"
+        - $ref: "#/components/parameters/paginationOffset"
+      responses:
+        "200":
+          description: Список отзывов на предложения указанного автора.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/bidReview"
+        "400":
+          description: Неверный формат запроса или его параметры.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        "401":
+          description: Пользователь не существует или некорректен.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        "403":
+          description: Недостаточно прав для выполнения действия.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        "404":
+          description: Тендер или отзывы не найдены.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        "500":
+          description: Сервер не готов обрабатывать запросы, если ответ статусом 500 или любой другой, кроме 200.
+
+components:
+  schemas:
+    username:
+      type: string
+      description: Уникальный slug пользователя.
+      example: test_user
+    tenderStatus:
+      type: string
+      description: Статус тендер
+      enum:
+        - Created
+        - Published
+        - Closed
+    tenderServiceType:
+      type: string
+      description: Вид услуги, к которой относиться тендер
+      enum:
+        - Construction
+        - Delivery
+        - Manufacture
+    tenderId:
+      type: string
+      description: Уникальный идентификатор тендера, присвоенный сервером.
+      example: 550e8400-e29b-41d4-a716-446655440000
+      maxLength: 100
+    tenderName:
+      type: string
+      description: Полное название тендера
+      maxLength: 100
+    tenderDescription:
+      type: string
+      description: Описание тендера
+      maxLength: 500
+    tenderVersion:
+      type: integer
+      description: Номер версии посел правок
+      format: int32
+      minimum: 1
+      default: 1
+    organizationId:
+      type: string
+      description: Уникальный идентификатор организации, присвоенный сервером.
+      example: 550e8400-e29b-41d4-a716-446655440000
+      maxLength: 100
+    tender:
+      type: object
+      description: Информация о тендере
+      properties:
+        id:
+          $ref: "#/components/schemas/tenderId"
+        name:
+          $ref: "#/components/schemas/tenderName"
+        description:
+          $ref: "#/components/schemas/tenderDescription"
+        serviceType:
+          $ref: "#/components/schemas/tenderServiceType"
+        status:
+          $ref: "#/components/schemas/tenderStatus"
+        organizationId:
+          $ref: "#/components/schemas/organizationId"
+        version:
+          $ref: "#/components/schemas/tenderVersion"
+        createdAt:
+          type: string
+          description: |
+            Серверная дата и время в момент, когда пользователь отправил тендер на создание.
+            Передается в формате RFC3339.
+          example: 2006-01-02T15:04:05Z07:00
+        
+      required:
+        - id
+        - name
+        - description
+        - serviceType
+        - status
+        - organizationId
+        - version
+        - createdAt
+      example:
+        id: 550e8400-e29b-41d4-a716-446655440000
+        name: Доставка товары Казань - Москва
+        description: Нужно доставить оборудовоние для олимпиады по робототехники
+        status: Created
+        serviceType: Delivery
+        verstion: 1
+        createdAt: 2006-01-02T15:04:05Z07:00
+    bidStatus:
+      type: string
+      description: Статус предложения
+      enum:
+        - Created
+        - Published
+        - Canceled
+        - Approved
+        - Rejected
+    bidDecision:
+      type: string
+      description: Решение по предложению
+      enum:
+        - Approved
+        - Rejected
+    bidId:
+      type: string
+      description: Уникальный идентификатор предложения, присвоенный сервером.
+      example: 550e8400-e29b-41d4-a716-446655440000
+      maxLength: 100
+    bidName:
+      type: string
+      description: Полное название предложения
+      maxLength: 100
+    bidDescription:
+      type: string
+      description: Описание предложения
+      maxLength: 500
+    bidFeedback:
+      type: string
+      description: Отзыв на предложение
+      maxLength: 1000
+    bidAuthorType:
+      type: string
+      description: Тип автора
+      enum:
+        - Organization
+        - User
+    bidAuthorId:
+      type: string
+      description: Уникальный идентификатор автора предложения, присвоенный сервером.
+      example: 550e8400-e29b-41d4-a716-446655440000
+      maxLength: 100
+    bidVersion:
+      type: integer
+      description: Номер версии посел правок
+      format: int32
+      minimum: 1
+      default: 1
+    bidReviewId: 
+      type: string
+      description: Уникальный идентификатор отзыва, присвоенный сервером.
+      example: 550e8400-e29b-41d4-a716-446655440000
+      maxLength: 100
+    bidReviewDescription:
+      type: string
+      description: Описание предложения
+      maxLength: 1000
+      
+    bidReview:
+      type: object
+      description: Отзыв о предложении
+      properties:
+        id:
+          $ref: "#/components/schemas/bidReviewId"
+        description:
+          $ref: "#/components/schemas/bidReviewDescription"
+        createdAt:
+          type: string
+          description: |
+            Серверная дата и время в момент, когда пользователь отправил отзыв на предложение.
+            Передается в формате RFC3339.
+          example: 2006-01-02T15:04:05Z07:00
+        
+      required:
+        - id
+        - description
+        - createdAt
+      example:
+        id: 550e8400-e29b-41d4-a716-446655440000
+        description: All gooood!!!!
+        createdAt: 2006-01-02T15:04:05Z07:00
+    bid:
+      type: object
+      description: Информация о предложении
+      properties:
+        id:
+          $ref: "#/components/schemas/bidId"
+        name:
+          $ref: "#/components/schemas/bidName"
+        description:
+          $ref: "#/components/schemas/bidDescription"
+        status:
+          $ref: "#/components/schemas/bidStatus"
+        tenderId:
+          $ref: "#/components/schemas/tenderId"
+        authorType:
+          $ref: "#/components/schemas/bidAuthorType"
+        authorId:
+          $ref: "#/components/schemas/bidAuthorId"
+        version:
+          $ref: "#/components/schemas/bidVersion"
+        createdAt:
+          type: string
+          description: |
+            Серверная дата и время в момент, когда пользователь отправил предложение на создание.
+            Передается в формате RFC3339.
+          example: 2006-01-02T15:04:05Z07:00
+        
+      required:
+        - id
+        - name
+        - description
+        - status
+        - tenderId
+        - createdAt
+        - authorType
+        - authorId
+        - version
+      example:
+        id: 550e8400-e29b-41d4-a716-446655440000
+        name: Доставка товаров Алексей
+        status: Created
+        authorType: User
+        authorId: 61a485f0-e29b-41d4-a716-446655440000
+        verstion: 1
+        createdAt: 2006-01-02T15:04:05Z07:00
+        
+    errorResponse:
+      type: object
+      description: Используется для возвращения ошибки пользователю
+      properties:
+        reason:
+          type: string
+          description: Описание ошибки в свободной форме
+          minLength: 5
+      required:
+        - reason
+      example:
+        reason: <объяснение, почему запрос пользователя не может быть обработан>
+  parameters:
+    paginationLimit:
+      in: query
+      name: limit
+      required: false
+      description: |
+        Максимальное число возвращаемых объектов. Используется для запросов с пагинацией.
+
+        Сервер должен возвращать максимальное допустимое число объектов.
+      schema:
+        type: integer
+        format: int32
+        minimum: 0
+        maximum: 50
+        default: 5
+    paginationOffset:
+      in: query
+      name: offset
+      required: false
+      description: |
+        Какое количество объектов должно быть пропущено с начала. Используется для запросов с пагинацией.
+      schema:
+        type: integer
+        format: int32
+        default: 0
+        minimum: 0
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
