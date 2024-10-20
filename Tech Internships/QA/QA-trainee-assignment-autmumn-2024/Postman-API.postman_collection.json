@@ -1,0 +1,118 @@
+{
+	"info": {
+		"_postman_id": "6f18ffa1-42df-4cf6-8884-9969f3660375",
+		"name": "Postman-API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "17015935"
+	},
+	"item": [
+		{
+			"name": "Получить объявление",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://qa-internship.avito.com/api/1/item/:id",
+					"protocol": "https",
+					"host": [
+						"qa-internship",
+						"avito",
+						"com"
+					],
+					"path": [
+						"api",
+						"1",
+						"item",
+						":id"
+					],
+					"query": [
+						{
+							"key": "123",
+							"value": "",
+							"disabled": true
+						},
+						{
+							"key": null,
+							"value": "",
+							"disabled": true
+						}
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "7a8fe969-2a57-468e-82c9-1982d22023c5"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Получить все объявления по продавцам",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://qa-internship.avito.com/api/1/:sellerID/item",
+					"protocol": "https",
+					"host": [
+						"qa-internship",
+						"avito",
+						"com"
+					],
+					"path": [
+						"api",
+						"1",
+						":sellerID",
+						"item"
+					],
+					"variable": [
+						{
+							"key": "sellerID",
+							"value": "3452"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Сохраним объявление",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "\n    {\n        \"name\": \"Телефон\",\n        \"price\": 85566,\n        \"sellerId\": 3452,\n        \"statistics\": {\n            \"contacts\": 32,\n            \"like\": 35,\n            \"viewCount\": 14\n        }\n    }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://qa-internship.avito.com/api/1/item",
+					"protocol": "https",
+					"host": [
+						"qa-internship",
+						"avito",
+						"com"
+					],
+					"path": [
+						"api",
+						"1",
+						"item"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": "",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
