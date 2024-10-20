@@ -1,0 +1,329 @@
+openapi: 3.0.0
+info:
+  title: Сервис баннеров
+  version: 1.0.0
+paths:
+  /user_banner:
+    get:
+      summary: Получение баннера для пользователя
+      parameters:
+        - in: query
+          name: tag_id
+          required: true
+          schema:
+            type: integer
+            description: Тэг пользователя
+        - in: query
+          name: feature_id
+          required: true
+          schema:
+            type: integer
+            description: Идентификатор фичи
+        - in: query
+          name: use_last_revision
+          required: false
+          schema:
+            type: boolean
+            default: false
+            description: Получать актуальную информацию 
+        - in: header
+          name: token
+          description: Токен пользователя
+          schema:
+            type: string
+            example: "user_token"
+      responses:
+        '200':
+          description: Баннер пользователя
+          content:
+            application/json:
+              schema:
+                description: JSON-отображение баннера
+                type: object
+                additionalProperties: true
+                example: '{"title": "some_title", "text": "some_text", "url": "some_url"}'
+        '400':
+          description: Некорректные данные
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '401':
+          description: Пользователь не авторизован
+        '403':
+          description: Пользователь не имеет доступа
+        '404':
+          description: Баннер для не найден
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /banner:
+    get:
+      summary: Получение всех баннеров c фильтрацией по фиче и/или тегу 
+      parameters:
+        - in: header
+          name: token
+          description: Токен админа
+          schema:
+            type: string
+            example: "admin_token"
+        - in: query
+          name: feature_id
+          required: false
+          schema:
+            type: integer
+            description: Идентификатор фичи
+        - in: query
+          name: tag_id
+          required: false
+          schema:
+            type: integer
+            description: Идентификатор тега
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+            description: Лимит 
+        - in: query
+          name: offset
+          required: false
+          schema:
+            type: integer
+            description: Оффсет 
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    banner_id:
+                      type: integer
+                      description: Идентификатор баннера
+                    tag_ids:
+                      type: array
+                      description: Идентификаторы тэгов
+                      items:
+                        type: integer
+                    feature_id:
+                      type: integer
+                      description: Идентификатор фичи
+                    content:
+                      type: object
+                      description: Содержимое баннера
+                      additionalProperties: true
+                      example: '{"title": "some_title", "text": "some_text", "url": "some_url"}'
+                    is_active:
+                      type: boolean
+                      description: Флаг активности баннера
+                    created_at:
+                      type: string
+                      format: date-time
+                      description: Дата создания баннера
+                    updated_at:
+                      type: string
+                      format: date-time
+                      description: Дата обновления баннера
+        '401':
+          description: Пользователь не авторизован
+        '403':
+          description: Пользователь не имеет доступа
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+    post:
+      summary: Создание нового баннера
+      parameters:
+        - in: header
+          name: token
+          description: Токен админа
+          schema:
+            type: string
+            example: "admin_token"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tag_ids:
+                  type: array
+                  description: Идентификаторы тэгов
+                  items:
+                    type: integer
+                feature_id:
+                  type: integer
+                  description: Идентификатор фичи
+                content:
+                  type: object
+                  description: Содержимое баннера
+                  additionalProperties: true
+                  example: '{"title": "some_title", "text": "some_text", "url": "some_url"}'
+                is_active:
+                  type: boolean
+                  description: Флаг активности баннера
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  banner_id:
+                    type: integer
+                    description: Идентификатор созданного баннера
+        '400':
+          description: Некорректные данные
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '401':
+          description: Пользователь не авторизован
+        '403':
+          description: Пользователь не имеет доступа
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /banner/{id}:
+    patch:
+      summary: Обновление содержимого баннера
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            description: Идентификатор баннера
+        - in: header
+          name: token
+          description: Токен админа
+          schema:
+            type: string
+            example: "admin_token"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tag_ids:
+                  nullable: true
+                  type: array
+                  description: Идентификаторы тэгов
+                  items:
+                    type: integer
+                feature_id:
+                  nullable: true
+                  type: integer
+                  description: Идентификатор фичи
+                content:
+                  nullable: true
+                  type: object
+                  description: Содержимое баннера
+                  additionalProperties: true
+                  example: '{"title": "some_title", "text": "some_text", "url": "some_url"}'
+                is_active:
+                  nullable: true
+                  type: boolean
+                  description: Флаг активности баннера
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Некорректные данные
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '401':
+          description: Пользователь не авторизован
+        '403':
+          description: Пользователь не имеет доступа
+        '404':
+          description: Баннер не найден
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+    delete:
+      summary: Удаление баннера по идентификатору
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            description: Идентификатор баннера
+        - in: header
+          name: token
+          description: Токен админа
+          schema:
+            type: string
+            example: "admin_token"
+      responses:
+        '204':
+          description: Баннер успешно удален
+        '400':
+          description: Некорректные данные
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '401':
+          description: Пользователь не авторизован
+        '403':
+          description: Пользователь не имеет доступа
+        '404':
+          description: Баннер для тэга не найден
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
