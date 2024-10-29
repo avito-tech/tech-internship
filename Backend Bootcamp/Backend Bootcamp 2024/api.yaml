@@ -1,0 +1,431 @@
+openapi: 3.0.0
+info:
+  title: Тестовое задание для отбора на Backend Bootcamp
+  version: 1.0.0
+paths:
+  /dummyLogin:
+    get:
+      description: >-
+        Упрощенный процесс получения токена для дальнейшего прохождения авторизации
+      tags:
+        - noAuth
+      parameters:
+        - name: user_type
+          in: query
+          schema:
+            $ref: '#/components/schemas/UserType'
+          required: true
+      responses:
+        '200':
+          description: Успешная аутентификация
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    $ref: '#/components/schemas/Token'
+        '500':
+          $ref: '#/components/responses/5xx'
+  /login:
+    post:
+      description: >-
+        Дополнительное задание.
+        Процесс аутентификации путем передачи идентификатор+пароля
+        пользователя и получения токена для дальнейшего прохождения авторизации
+      tags:
+        - noAuth 
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  $ref: '#/components/schemas/UserId'
+                password:
+                  $ref: '#/components/schemas/Password'
+      responses:
+        '200':
+          description: Успешная аутентификация
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    $ref: '#/components/schemas/Token'
+        '400':
+          description: Невалидные данные
+        '404':
+          description: Пользователь не найден
+        '500':
+          $ref: '#/components/responses/5xx'
+  /register:
+    post:
+      description: >-
+        Дополнительное задание.
+        Регистрация нового пользователя
+      tags:
+        - noAuth 
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  $ref: '#/components/schemas/Email'
+                password:
+                  $ref: '#/components/schemas/Password'
+                user_type:
+                  $ref: '#/components/schemas/UserType'
+      responses:
+        '200':
+          description: Успешная регистрация
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_id:
+                    $ref: '#/components/schemas/UserId'
+        '400':
+          description: Невалидные данные
+        '500':
+          $ref: '#/components/responses/5xx'
+  /house/create:
+    post:
+      description: >-
+        Создание нового дома.
+      tags:
+        - moderationsOnly
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - address
+                - year
+              properties:
+                address:
+                  $ref: '#/components/schemas/Address'
+                year:
+                  $ref: '#/components/schemas/Year'
+                developer:
+                  $ref: '#/components/schemas/Developer'
+      responses:
+        '200':
+          description: Успешно создан дом
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/House'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '500':
+          $ref: '#/components/responses/5xx'
+  /house/{id}:
+    get:
+      description: >-
+        Получение квартир в выбранном доме.
+        Для обычных пользователей возвращаются только квартиры в статусе approved, для модераторов - в любом статусе
+      tags:
+        - authOnly
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          schema:
+            $ref: '#/components/schemas/HouseId'
+          required: true
+          in: path
+      responses:
+        '200':
+          description: Успешно получены квартиры в доме
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - flats
+                properties:
+                  flats:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Flat'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '500':
+          $ref: '#/components/responses/5xx'
+  /house/{id}/subscribe:
+    post:
+      description: >-
+        Дополнительное задание.
+        Подписаться на уведомления о новых квартирах в доме.
+      tags:
+        - authOnly
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          schema:
+            $ref: '#/components/schemas/HouseId'
+          required: true
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  $ref: '#/components/schemas/Email'
+      responses:
+        '200':
+          description: Успешно оформлена подписка
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '500':
+          $ref: '#/components/responses/5xx'
+  /flat/create:
+    post:
+      description: >-
+        Создание квартиры.
+        Квартира создается в статусе created
+      tags:
+        - authOnly
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - house_id
+                - price
+                - room
+              properties:
+                house_id:
+                  $ref: '#/components/schemas/HouseId'
+                price:
+                  $ref: '#/components/schemas/Price'
+                rooms:
+                  $ref: '#/components/schemas/Rooms'
+      responses:
+        '200':
+          description: Успешно создана квартира
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Flat'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '500':
+          $ref: '#/components/responses/5xx'
+  /flat/update:
+    post:
+      description: >-
+        Обновление квартиры.
+      tags:
+        - moderationsOnly
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id
+                - price
+                - room
+              properties:
+                id:
+                  $ref: '#/components/schemas/FlatId'
+                status:
+                  $ref: '#/components/schemas/Status'
+      responses:
+        '200':
+          description: Успешно обновлена квартира
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Flat'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '500':
+          $ref: '#/components/responses/5xx'
+components:
+  responses:
+    '400':
+      description: Невалидные данные ввода
+    '401':
+      description: Неавторизованный доступ
+    5xx:
+      description: Ошибка сервера
+      headers:
+        Retry-After:
+          description: Время, через которое еще раз нужно сделать запрос
+          required: false
+          schema:
+            type: integer
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - message
+            properties:
+              message:
+                type: string
+                description: Описание ошибки
+                example: что-то пошло не так
+              request_id:
+                type: string
+                description: >-
+                  Идентификатор запроса. Предназначен для более быстрого поиска
+                  проблем.
+                example: g12ugs67gqw67yu12fgeuqwd
+              code:
+                type: integer
+                description: >-
+                  Код ошибки. Предназначен для классификации проблем и более
+                  быстрого решения проблем.
+                example: 12345
+  schemas:
+    UserId:
+      type: string
+      format: uuid
+      description: Идентификатор пользователя
+      example: 'cae36e0f-69e5-4fa8-a179-a52d083c5549'
+    Address:
+      type: string
+      description: Адрес дома
+      example: Лесная улица, 7, Москва, 125196
+    Year:
+      type: integer
+      description: Год постройки дома
+      example: 2000
+      minimum: 0
+    Developer:
+      type: string
+      nullable: true
+      description: Застройщик 
+      example: Мэрия города
+    House:
+      type: object
+      description: Дом
+      required:
+        - id
+        - address
+        - year
+      properties:
+        id:
+          $ref: '#/components/schemas/HouseId'
+        address:
+          $ref: '#/components/schemas/Address'
+        year:
+          $ref: '#/components/schemas/Year'
+        developer:
+          $ref: '#/components/schemas/Developer'
+        created_at:
+          $ref: '#/components/schemas/Date'
+        update_at:
+          $ref: '#/components/schemas/Date'
+    HouseId:
+      type: integer
+      description: Идентификатор дома
+      example: 12345
+      minimum: 1
+    Price:
+      type: integer
+      description: Цена квартиры в у.е.
+      example: 10000
+      minimum: 0
+    Rooms:
+      type: integer
+      description: Количество комнат в квартире
+      example: 4
+      minimum: 1
+    Flat:
+      type: object
+      description: Квартира
+      required:
+        - id
+        - house_id
+        - price
+        - rooms
+        - status
+      properties:
+        id:
+          $ref: '#/components/schemas/FlatId'
+        house_id:
+          $ref: '#/components/schemas/HouseId'
+        price:
+          $ref: '#/components/schemas/Price'
+        rooms:
+          $ref: '#/components/schemas/Rooms'
+        status:
+          $ref: '#/components/schemas/Status'
+    Status:
+      type: string
+      enum: [created, approved, declined, on moderation]
+      description: Статус квартиры
+      example: approved
+    FlatId:
+      type: integer
+      description: Идентификатор квартиры
+      example: 123456
+      minimum: 1
+    Email:
+      type: string
+      format: email
+      description: Email пользователя
+      example: test@gmail.com    
+    Password:
+      type: string
+      description: Пароль пользователя
+      example: Секретная строка
+    UserType:
+      type: string
+      enum: [client, moderator]
+      description: Тип пользователя
+      example: moderator
+    Token:
+      type: string
+      description: Авторизационный токен
+      example: auth_token
+    Date:
+      type: string
+      description: Дата + время
+      format: date-time
+      example: 2017-07-21T17:32:28Z
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: Авторизация по токену, который был получен в методах /dummyLogin или /login
+tags:
+  - name: noAuth
+    description: Доступно всем, авторизация не нужна
+  - name: authOnly
+    description: Доступно любому авторизированному
+  - name: moderationsOnly
+    description: Доступно только для модераторов
