@@ -14,7 +14,7 @@
 - [Наш YouTube](https://www.youtube.com/avitotech)
 
 ## Разделы в репозитории
-[Backend Bootcamp]() — тестовые задания прошлых наборов
+[Backend Bootcamp](https://github.com/avito-tech/tech-internship/tree/main/Backend%20Bootcamp) — тестовые задания прошлых наборов
 
 ## Полезные материалы
 - [Playbook Авито](https://gitverse.ru/avito.tech/playbook)
