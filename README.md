@@ -18,7 +18,7 @@
 - [Наш YouTube](https://www.youtube.com/avitotech)
 
 ## Разделы в репозитории
-[Tech Internships](https://github.com/sgkhabadze/tech-internship/tree/main/Tech%20Internships) — тестовые задания, разборы заданий прошлых наборов, и всё, что может пригодится для успешного отбора на стажировку!
+[Tech Internships](https://github.com/avito-tech/tech-internship/tree/main/Tech%20Internships) — тестовые задания, разборы заданий прошлых наборов, и всё, что может пригодится для успешного отбора на стажировку!
 
 ## Полезные материалы
 - [Playbook Авито](https://gitverse.ru/avito.tech/playbook)
