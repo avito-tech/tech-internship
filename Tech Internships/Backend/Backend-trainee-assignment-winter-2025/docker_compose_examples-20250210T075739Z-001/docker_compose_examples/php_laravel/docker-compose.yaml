@@ -1,0 +1,53 @@
+version: "3.9"
+
+networks:
+  internal:
+    name: internal
+
+services:
+  app:
+    container_name: php-fpm
+    build: docker/php8-fpm
+    ports:
+      - 9000:9000
+    volumes:
+      - ./src:/var/www/laravel
+      - ./logs/laravel:/var/www/laravel/storage/logs
+    depends_on:
+      - db
+    networks:
+      - internal
+
+  nginx:
+    container_name: nginx
+    build: docker/nginx
+    ports:
+      - 8080:80
+    depends_on:
+      - app
+    networks:
+      - internal
+    volumes:
+      - ./logs/nginx:/var/log/nginx
+      - ./src/public:/var/www/laravel/public
+
+  db:
+    image: postgres:13
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: shop
+    volumes:
+      # "./migrations/init.sql" - путь к миграциям БД
+      - ./migrations/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "sh -c 'pg_isready -U postgres -d shop'"]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+    networks:
+      - internal
