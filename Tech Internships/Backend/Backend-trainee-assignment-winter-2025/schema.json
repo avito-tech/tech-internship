@@ -1,0 +1,319 @@
+{
+  "info": {
+    "title": "API Avito shop",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/info": {
+      "get": {
+        "summary": "Получить информацию о монетах, инвентаре и истории транзакций.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успешный ответ.",
+            "schema": {
+              "$ref": "#/definitions/InfoResponse"
+            }
+          },
+          "400": {
+            "description": "Неверный запрос.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Неавторизован.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "parameters": [],
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/api/sendCoin": {
+      "post": {
+        "summary": "Отправить монеты другому пользователю.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успешный ответ."
+          },
+          "400": {
+            "description": "Неверный запрос.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Неавторизован.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "required": true,
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/SendCoinRequest"
+            }
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/api/buy/{item}": {
+      "get": {
+        "summary": "Купить предмет за монеты.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "item",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успешный ответ."
+          },
+          "400": {
+            "description": "Неверный запрос.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Неавторизован.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/api/auth": {
+      "post": {
+        "summary": "Аутентификация и получение JWT-токена.",
+        "responses": {
+          "200": {
+            "description": "Успешная аутентификация.",
+            "schema": {
+              "$ref": "#/definitions/AuthResponse"
+            }
+          },
+          "400": {
+            "description": "Неверный запрос.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Неавторизован.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "required": true,
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/AuthRequest"
+            }
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ]
+      }
+    }
+  },
+  "swagger": "2.0",
+  "host": "localhost:8080",
+  "schemes": [
+    "http"
+  ],
+  "basePath": "/",
+  "definitions": {
+    "InfoResponse": {
+      "type": "object",
+      "properties": {
+        "coins": {
+          "type": "integer",
+          "description": "Количество доступных монет."
+        },
+        "inventory": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "description": "Тип предмета."
+              },
+              "quantity": {
+                "type": "integer",
+                "description": "Количество предметов."
+              }
+            }
+          }
+        },
+        "coinHistory": {
+          "type": "object",
+          "properties": {
+            "received": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "fromUser": {
+                    "type": "string",
+                    "description": "Имя пользователя, который отправил монеты."
+                  },
+                  "amount": {
+                    "type": "integer",
+                    "description": "Количество полученных монет."
+                  }
+                }
+              }
+            },
+            "sent": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "toUser": {
+                    "type": "string",
+                    "description": "Имя пользователя, которому отправлены монеты."
+                  },
+                  "amount": {
+                    "type": "integer",
+                    "description": "Количество отправленных монет."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "ErrorResponse": {
+      "type": "object",
+      "properties": {
+        "errors": {
+          "type": "string",
+          "description": "Сообщение об ошибке, описывающее проблему."
+        }
+      }
+    },
+    "AuthRequest": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string",
+          "description": "Имя пользователя для аутентификации."
+        },
+        "password": {
+          "type": "string",
+          "format": "password",
+          "description": "Пароль для аутентификации."
+        }
+      },
+      "required": [
+        "username",
+        "password"
+      ]
+    },
+    "AuthResponse": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string",
+          "description": "JWT-токен для доступа к защищенным ресурсам."
+        }
+      }
+    },
+    "SendCoinRequest": {
+      "type": "object",
+      "properties": {
+        "toUser": {
+          "type": "string",
+          "description": "Имя пользователя, которому нужно отправить монеты."
+        },
+        "amount": {
+          "type": "integer",
+          "description": "Количество монет, которые необходимо отправить."
+        }
+      },
+      "required": [
+        "toUser",
+        "amount"
+      ]
+    }
+  },
+  "securityDefinitions": {
+    "BearerAuth": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
+  "x-components": {}
+}
