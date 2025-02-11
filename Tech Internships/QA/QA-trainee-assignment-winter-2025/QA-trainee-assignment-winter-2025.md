@@ -21,7 +21,7 @@
 
 Host - [https://qa-internship.avito.com](https://qa-internship.avito.com)
 
-Postman коллекция: [тут](https://drive.google.com/file/d/1j6Q3aAsoy-L96XBhfvA6OOzrYrwNz4h9/view?usp=sharing)
+Postman коллекция: [тут](https://github.com/avito-tech/tech-internship/blob/main/Tech%20Internships/QA/QA-trainee-assignment-winter-2025/qa-internship.postman_collection.json)
 
 ### Краткое описание сервиса:
 
