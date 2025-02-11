@@ -1,0 +1,250 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: qa-internship
+
+paths:
+  /api/1/item/{id}:
+    parameters:
+      - name: "id"
+        in: path
+        required: true
+        schema:
+          type: string
+
+        description: "идентификатор объявления"
+    get:
+      responses:
+        200:
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  required: [ id,sellerId,name,price,statistics ]
+                  properties:
+                    id: { type: string }
+                    sellerId: { type: integer }
+                    name: { type: string }
+                    price: { type: integer }
+                    createdAt: { type: string }
+                    statistics:
+                      nullable: true
+                      required: [ likes, viewCount, contacts ]
+                      type: object
+                      properties:
+                        likes: { type: integer }
+                        viewCount: { type: integer }
+                        contacts: { type: integer }
+        404:
+          description: 'Not Found'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: object
+                    required: [ 'messages' ]
+                    properties:
+                      message:
+                        type: string
+                      messages:
+                        type: object
+                  status:
+                    type: string
+        500:
+          description: 'Server error'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: object
+                    required: [ 'messages' ]
+                    properties:
+                      message:
+                        type: string
+                      messages:
+                        type: object
+                  status:
+                    type: string
+  /api/1/statistic/{id}:
+    x-gateway:
+      enable: false
+    parameters:
+      - name: "id"
+        in: path
+        required: true
+        schema:
+          type: string
+
+        description: "идентификатор объявления"
+    get:
+      description: "Получить статистику по объявлению"
+      responses:
+        200:
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  statistics:
+                  nullable: true
+                  required: [ likes, viewCount, contacts ]
+                  type: object
+                  properties:
+                    likes: { type: integer }
+                    viewCount: { type: integer }
+                    contacts: { type: integer }
+        404:
+          description: 'Not Found'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: object
+                    required: [ 'messages' ]
+                    properties:
+                      message:
+                        type: string
+                      messages:
+                        type: object
+                  status:
+                    type: string
+        500:
+          description: 'Server error'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: object
+                    required: [ 'messages' ]
+                    properties:
+                      message:
+                        type: string
+                      messages:
+                        type: object
+                  status:
+                    type: string
+  /api/1/item:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - sellerID
+                - name
+                - price
+              properties:
+                sellerID: { type: integer }
+                name: { type: string }
+                price: { type: integer }
+      responses:
+        200:
+          description: 'Success response'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string }
+        400:
+          description: 'Bad request'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: object
+                    required: [ 'messages' ]
+                    properties:
+                      message:
+                        type: string
+                      messages:
+                        type: object
+                        additionalProperties:
+                          type: string
+                  status:
+                    type: string
+
+  /api/1/{sellerID}/item:
+    parameters:
+      - name: "sellerID"
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: "Идентификатор продавца"
+    get:
+      responses:
+        200:
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  required: [ id,sellerId,name,price,statistics ]
+                  properties:
+                    id: { type: string }
+                    sellerId: { type: integer }
+                    name: { type: string }
+                    price: { type: integer }
+                    createdAt: { type: string }
+                    statistics:
+                      nullable: true
+                      required: [ likes, viewCount, contacts ]
+                      type: object
+                      properties:
+                        likes: { type: integer }
+                        viewCount: { type: integer }
+                        contacts: { type: integer }
+        400:
+          description: 'Bad request'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: object
+                    required: [ 'messages' ]
+                    properties:
+                      message:
+                        type: string
+                      messages:
+                        type: object
+                        additionalProperties:
+                          type: string
+                  status:
+                    type: string
+        500:
+          description: 'Server error'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: object
+                    required: [ 'messages' ]
+                    properties:
+                      message:
+                        type: string
+                      messages:
+                        type: object
+                  status:
+                    type: string
