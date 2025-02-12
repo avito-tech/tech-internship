@@ -1,0 +1,679 @@
+{
+	"info": {
+		"_postman_id": "a97c0a7b-861c-4ab4-91bc-e41f077ec162",
+		"name": "QA-internship",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "17015935"
+	},
+	"item": [
+		{
+			"name": "api",
+			"item": [
+				{
+					"name": "1",
+					"item": [
+						{
+							"name": "item",
+							"item": [
+								{
+									"name": "{id}",
+									"item": [
+										{
+											"name": "/api/1/item/:id",
+											"request": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/json"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/api/1/item/:id",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"1",
+														"item",
+														":id"
+													],
+													"variable": [
+														{
+															"key": "id",
+															"value": "0cd4183f-a699-4486-83f8-b513dfde477a",
+															"description": "(Required) идентификатор объявления"
+														}
+													]
+												}
+											},
+											"response": [
+												{
+													"name": "ok",
+													"originalRequest": {
+														"method": "GET",
+														"header": [
+															{
+																"key": "Accept",
+																"value": "application/json"
+															}
+														],
+														"url": {
+															"raw": "{{baseUrl}}/api/1/item/:id",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"api",
+																"1",
+																"item",
+																":id"
+															],
+															"variable": [
+																{
+																	"key": "id"
+																}
+															]
+														}
+													},
+													"status": "OK",
+													"code": 200,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "[\n  {\n    \"id\": \"<string>\",\n    \"sellerId\": \"<integer>\",\n    \"name\": \"<string>\",\n    \"price\": \"<integer>\",\n    \"statistics\": {\n      \"likes\": \"<integer>\",\n      \"viewCount\": \"<integer>\",\n      \"contacts\": \"<integer>\"\n    },\n    \"createdAt\": \"<string>\"\n  },\n  {\n    \"id\": \"<string>\",\n    \"sellerId\": \"<integer>\",\n    \"name\": \"<string>\",\n    \"price\": \"<integer>\",\n    \"statistics\": {\n      \"likes\": \"<integer>\",\n      \"viewCount\": \"<integer>\",\n      \"contacts\": \"<integer>\"\n    },\n    \"createdAt\": \"<string>\"\n  }\n]"
+												},
+												{
+													"name": "Not Found",
+													"originalRequest": {
+														"method": "GET",
+														"header": [
+															{
+																"key": "Accept",
+																"value": "application/json"
+															}
+														],
+														"url": {
+															"raw": "{{baseUrl}}/api/1/item/:id",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"api",
+																"1",
+																"item",
+																":id"
+															],
+															"variable": [
+																{
+																	"key": "id"
+																}
+															]
+														}
+													},
+													"status": "Not Found",
+													"code": 404,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "{\n  \"result\": {\n    \"messages\": {},\n    \"message\": \"<string>\"\n  },\n  \"status\": \"<string>\"\n}"
+												},
+												{
+													"name": "Server error",
+													"originalRequest": {
+														"method": "GET",
+														"header": [
+															{
+																"key": "Accept",
+																"value": "application/json"
+															}
+														],
+														"url": {
+															"raw": "{{baseUrl}}/api/1/item/:id",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"api",
+																"1",
+																"item",
+																":id"
+															],
+															"variable": [
+																{
+																	"key": "id"
+																}
+															]
+														}
+													},
+													"status": "Internal Server Error",
+													"code": 500,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "{\n  \"result\": {\n    \"messages\": {},\n    \"message\": \"<string>\"\n  },\n  \"status\": \"<string>\"\n}"
+												}
+											]
+										}
+									]
+								},
+								{
+									"name": "/api/1/item",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"sellerID\": 1234345231,\n  \"name\": \"dsds\",\n  \"price\": 1,\n  \"statistics\":{\n    \"contacts\":3,\n    \"likes\":123,\n    \"viewCount\":12\n  }\n}",
+											"options": {
+												"raw": {
+													"headerFamily": "json",
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/1/item",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"1",
+												"item"
+											],
+											"query": [
+												{
+													"key": "",
+													"value": "",
+													"disabled": true
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "Success response",
+											"originalRequest": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													},
+													{
+														"key": "Accept",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"sellerID\": \"<integer>\",\n  \"name\": \"<string>\",\n  \"price\": \"<integer>\"\n}",
+													"options": {
+														"raw": {
+															"headerFamily": "json",
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrl}}/api/1/item",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"1",
+														"item"
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"status\": \"<string>\"\n}"
+										},
+										{
+											"name": "Bad request",
+											"originalRequest": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													},
+													{
+														"key": "Accept",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"sellerID\": \"<integer>\",\n  \"name\": \"<string>\",\n  \"price\": \"<integer>\"\n}",
+													"options": {
+														"raw": {
+															"headerFamily": "json",
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrl}}/api/1/item",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"1",
+														"item"
+													]
+												}
+											},
+											"status": "Bad Request",
+											"code": 400,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"result\": {\n    \"messages\": {\n      \"nostrudffb\": \"<string>\",\n      \"Ut__\": \"<string>\"\n    },\n    \"message\": \"<string>\"\n  },\n  \"status\": \"<string>\"\n}"
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "statistic",
+							"item": [
+								{
+									"name": "{id}",
+									"item": [
+										{
+											"name": "Получить статистику по объявлению",
+											"request": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/json"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/api/1/statistic/:id",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"1",
+														"statistic",
+														":id"
+													],
+													"variable": [
+														{
+															"key": "id",
+															"value": "0cd4183f-a699-4486-83f8-b513dfde477a"
+														}
+													]
+												},
+												"description": "Получить статистику по объявлению"
+											},
+											"response": [
+												{
+													"name": "ok",
+													"originalRequest": {
+														"method": "GET",
+														"header": [
+															{
+																"key": "Accept",
+																"value": "application/json"
+															}
+														],
+														"url": {
+															"raw": "{{baseUrl}}/api/1/statistic/:id",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"api",
+																"1",
+																"statistic",
+																":id"
+															],
+															"variable": [
+																{
+																	"key": "id"
+																}
+															]
+														}
+													},
+													"status": "OK",
+													"code": 200,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "[\n  {\n    \"likes\": \"<integer>\",\n    \"viewCount\": \"<integer>\",\n    \"contacts\": \"<integer>\"\n  },\n  {\n    \"likes\": \"<integer>\",\n    \"viewCount\": \"<integer>\",\n    \"contacts\": \"<integer>\"\n  }\n]"
+												},
+												{
+													"name": "Not Found",
+													"originalRequest": {
+														"method": "GET",
+														"header": [
+															{
+																"key": "Accept",
+																"value": "application/json"
+															}
+														],
+														"url": {
+															"raw": "{{baseUrl}}/api/1/statistic/:id",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"api",
+																"1",
+																"statistic",
+																":id"
+															],
+															"variable": [
+																{
+																	"key": "id"
+																}
+															]
+														}
+													},
+													"status": "Not Found",
+													"code": 404,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "{\n  \"result\": {\n    \"messages\": {},\n    \"message\": \"<string>\"\n  },\n  \"status\": \"<string>\"\n}"
+												},
+												{
+													"name": "Server error",
+													"originalRequest": {
+														"method": "GET",
+														"header": [
+															{
+																"key": "Accept",
+																"value": "application/json"
+															}
+														],
+														"url": {
+															"raw": "{{baseUrl}}/api/1/statistic/:id",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"api",
+																"1",
+																"statistic",
+																":id"
+															],
+															"variable": [
+																{
+																	"key": "id"
+																}
+															]
+														}
+													},
+													"status": "Internal Server Error",
+													"code": 500,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "{\n  \"result\": {\n    \"messages\": {},\n    \"message\": \"<string>\"\n  },\n  \"status\": \"<string>\"\n}"
+												}
+											]
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "{sellerID}",
+							"item": [
+								{
+									"name": "item",
+									"item": [
+										{
+											"name": "/api/1/:sellerID/item",
+											"request": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/json"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/api/1/:sellerID/item",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"1",
+														":sellerID",
+														"item"
+													],
+													"variable": [
+														{
+															"key": "sellerID",
+															"value": "1234345231",
+															"description": "(Required) Идентификатор продавца"
+														}
+													]
+												}
+											},
+											"response": [
+												{
+													"name": "ok",
+													"originalRequest": {
+														"method": "GET",
+														"header": [
+															{
+																"key": "Accept",
+																"value": "application/json"
+															}
+														],
+														"url": {
+															"raw": "{{baseUrl}}/api/1/:sellerID/item",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"api",
+																"1",
+																":sellerID",
+																"item"
+															],
+															"variable": [
+																{
+																	"key": "sellerID"
+																}
+															]
+														}
+													},
+													"status": "OK",
+													"code": 200,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "[\n  {\n    \"id\": \"<string>\",\n    \"sellerId\": \"<integer>\",\n    \"name\": \"<string>\",\n    \"price\": \"<integer>\",\n    \"statistics\": {\n      \"likes\": \"<integer>\",\n      \"viewCount\": \"<integer>\",\n      \"contacts\": \"<integer>\"\n    },\n    \"createdAt\": \"<string>\"\n  },\n  {\n    \"id\": \"<string>\",\n    \"sellerId\": \"<integer>\",\n    \"name\": \"<string>\",\n    \"price\": \"<integer>\",\n    \"statistics\": {\n      \"likes\": \"<integer>\",\n      \"viewCount\": \"<integer>\",\n      \"contacts\": \"<integer>\"\n    },\n    \"createdAt\": \"<string>\"\n  }\n]"
+												},
+												{
+													"name": "Bad request",
+													"originalRequest": {
+														"method": "GET",
+														"header": [
+															{
+																"key": "Accept",
+																"value": "application/json"
+															}
+														],
+														"url": {
+															"raw": "{{baseUrl}}/api/1/:sellerID/item",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"api",
+																"1",
+																":sellerID",
+																"item"
+															],
+															"variable": [
+																{
+																	"key": "sellerID"
+																}
+															]
+														}
+													},
+													"status": "Bad Request",
+													"code": 400,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "{\n  \"result\": {\n    \"messages\": {\n      \"nostrudffb\": \"<string>\",\n      \"Ut__\": \"<string>\"\n    },\n    \"message\": \"<string>\"\n  },\n  \"status\": \"<string>\"\n}"
+												},
+												{
+													"name": "Server error",
+													"originalRequest": {
+														"method": "GET",
+														"header": [
+															{
+																"key": "Accept",
+																"value": "application/json"
+															}
+														],
+														"url": {
+															"raw": "{{baseUrl}}/api/1/:sellerID/item",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"api",
+																"1",
+																":sellerID",
+																"item"
+															],
+															"variable": [
+																{
+																	"key": "sellerID"
+																}
+															]
+														}
+													},
+													"status": "Internal Server Error",
+													"code": 500,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "{\n  \"result\": {\n    \"messages\": {},\n    \"message\": \"<string>\"\n  },\n  \"status\": \"<string>\"\n}"
+												}
+											]
+										}
+									]
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "https://qa-internship.avito.com"
+		}
+	]
+}
