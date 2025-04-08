@@ -1,0 +1,404 @@
+openapi: 3.0.0
+info:
+  title: backend service
+  description: Сервис для управления ПВЗ и приемкой товаров
+  version: 1.0.0
+
+components:
+  schemas:
+    Token:
+      type: string
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        role:
+          type: string
+          enum: [employee, moderator]
+      required: [email, role]
+
+    PVZ:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        registrationDate:
+          type: string
+          format: date-time
+        city:
+          type: string
+          enum: [Москва, Санкт-Петербург, Казань]
+      required: [city]
+
+    Reception:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        dateTime:
+          type: string
+          format: date-time
+        pvzId:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [in_progress, close]
+      required: [dateTime, pvzId, status]
+
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        dateTime:
+          type: string
+          format: date-time
+        type:
+          type: string
+          enum: [электроника, одежда, обувь]
+        receptionId:
+          type: string
+          format: uuid
+      required: [type, receptionId]
+
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+      required: [message]
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+paths:
+  /dummyLogin:
+    post:
+      summary: Получение тестового токена
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                role:
+                  type: string
+                  enum: [employee, moderator]
+              required: [role]
+      responses:
+        '200':
+          description: Успешная авторизация
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+        '400':
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /register:
+    post:
+      summary: Регистрация пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                role:
+                  type: string
+                  enum: [employee, moderator]
+              required: [email, password, role]
+      responses:
+        '201':
+          description: Пользователь создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /login:
+    post:
+      summary: Авторизация пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+              required: [email, password]
+      responses:
+        '200':
+          description: Успешная авторизация
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+        '401':
+          description: Неверные учетные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /pvz:
+    post:
+      summary: Создание ПВЗ (только для модераторов)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PVZ'
+      responses:
+        '201':
+          description: ПВЗ создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PVZ'
+        '400':
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    get:
+      summary: Получение списка ПВЗ с фильтрацией по дате приемки и пагинацией
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: startDate
+          in: query
+          description: Начальная дата диапазона
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: endDate
+          in: query
+          description: Конечная дата диапазона
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: page
+          in: query
+          description: Номер страницы
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          description: Количество элементов на странице
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 30
+            default: 10
+      responses:
+        '200':
+          description: Список ПВЗ
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    pvz:
+                      $ref: '#/components/schemas/PVZ'
+                    receptions:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          reception:
+                            $ref: '#/components/schemas/Reception'
+                          products:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/Product'
+
+  /pvz/{pvzId}/close_last_reception:
+    post:
+      summary: Закрытие последней открытой приемки товаров в рамках ПВЗ
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: pvzId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Приемка закрыта
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reception'
+        '400':
+          description: Неверный запрос или приемка уже закрыта
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+
+  /pvz/{pvzId}/delete_last_product:
+    post:
+      summary: Удаление последнего добавленного товара из текущей приемки (LIFO, только для сотрудников ПВЗ)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: pvzId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Товар удален
+        '400':
+          description: Неверный запрос, нет активной приемки или нет товаров для удаления
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /receptions:
+    post:
+      summary: Создание новой приемки товаров (только для сотрудников ПВЗ)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pvzId:
+                  type: string
+                  format: uuid
+              required: [pvzId]
+      responses:
+        '201':
+          description: Приемка создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reception'
+        '400':
+          description: Неверный запрос или есть незакрытая приемка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /products:
+    post:
+      summary: Добавление товара в текущую приемку (только для сотрудников ПВЗ)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                  enum: [электроника, одежда, обувь]
+                pvzId:
+                  type: string
+                  format: uuid
+              required: [type, pvzId]
+      responses:
+        '201':
+          description: Товар добавлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: Неверный запрос или нет активной приемки
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
