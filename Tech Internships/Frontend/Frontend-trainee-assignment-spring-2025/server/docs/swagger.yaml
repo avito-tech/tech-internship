@@ -1,0 +1,644 @@
+basePath: /api/v1
+definitions:
+  errs.ErrorResponse:
+    properties:
+      error:
+        type: string
+      message:
+        type: string
+    type: object
+  models.AssigneeUserForTask:
+    description: Упрощенная модель пользователя для отображения в задачах
+    properties:
+      avatarUrl:
+        type: string
+      email:
+        type: string
+      fullName:
+        type: string
+      id:
+        type: integer
+    type: object
+  models.CreateTaskRequest:
+    description: Запрос на создание новой задачи
+    properties:
+      assigneeId:
+        type: integer
+      boardId:
+        type: integer
+      description:
+        maxLength: 500
+        minLength: 1
+        type: string
+      priority:
+        enum:
+        - Low
+        - Medium
+        - High
+        example: Medium
+        type: string
+      title:
+        maxLength: 100
+        minLength: 1
+        type: string
+    required:
+    - assigneeId
+    - boardId
+    - description
+    - title
+    type: object
+  models.CreateTaskResponse:
+    description: Ответ после успешного создания задачи
+    properties:
+      id:
+        type: integer
+    type: object
+  models.GetBoardsResponse:
+    description: Содержит основную информацию о доске и количество задач
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      taskCount:
+        type: integer
+    type: object
+  models.GetTaskByIDResponse:
+    description: Содержит полные данные задачи, включая информацию об исполнителе
+      и доске
+    properties:
+      assignee:
+        $ref: '#/definitions/models.AssigneeUserForTask'
+      boardName:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      priority:
+        enum:
+        - Low
+        - Medium
+        - High
+        example: High
+        type: string
+      status:
+        enum:
+        - Backlog
+        - InProgress
+        - Done
+        example: Done
+        type: string
+      title:
+        type: string
+    type: object
+  models.GetTasksOnBoardResponse:
+    description: Ответ с данными задач, принадлежащих конкретной доске
+    properties:
+      assignee:
+        $ref: '#/definitions/models.AssigneeUserForTask'
+      description:
+        type: string
+      id:
+        type: integer
+      priority:
+        enum:
+        - Low
+        - Medium
+        - High
+        example: Medium
+        type: string
+      status:
+        enum:
+        - Backlog
+        - InProgress
+        - Done
+        example: Done
+        type: string
+      title:
+        type: string
+    type: object
+  models.GetTasksResponse:
+    description: Содержит основные данные о задачах с информацией об исполнителях
+      и досках
+    properties:
+      assignee:
+        $ref: '#/definitions/models.AssigneeUserForTask'
+      assigneeId:
+        type: integer
+      boardId:
+        type: integer
+      boardName:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      priority:
+        enum:
+        - Low
+        - Medium
+        - High
+        example: Medium
+        type: string
+      status:
+        enum:
+        - Backlog
+        - InProgress
+        - Done
+        example: Done
+        type: string
+      title:
+        type: string
+    type: object
+  models.GetTeamBoards:
+    description: Содержит данные о досках, принадлежащих команде
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  models.GetTeamResponse:
+    description: Содержит данные о команде, включая пользователей и доски
+    properties:
+      boards:
+        items:
+          $ref: '#/definitions/models.GetTeamBoards'
+        type: array
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      users:
+        items:
+          $ref: '#/definitions/models.GetTeamUsers'
+        type: array
+    type: object
+  models.GetTeamUsers:
+    description: Содержит данные о пользователях, принадлежащих команде
+    properties:
+      avatarUrl:
+        type: string
+      description:
+        type: string
+      email:
+        type: string
+      fullName:
+        type: string
+      id:
+        type: integer
+    type: object
+  models.GetTeamsResponse:
+    description: Содержит данные о команде, включая количество пользователей и досок
+    properties:
+      boardsCount:
+        type: integer
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      usersCount:
+        type: integer
+    type: object
+  models.GetUserTasksResponse:
+    description: Содержит данные о задаче, включая информацию о доске
+    properties:
+      boardName:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      priority:
+        enum:
+        - Low
+        - Medium
+        - High
+        example: Medium
+        type: string
+      status:
+        enum:
+        - Backlog
+        - InProgress
+        - Done
+        example: Done
+        type: string
+      title:
+        type: string
+    type: object
+  models.GetUsersResponse:
+    description: Содержит данные о пользователе, включая информацию о команде и количестве
+      задач
+    properties:
+      avatarUrl:
+        type: string
+      description:
+        type: string
+      email:
+        type: string
+      fullName:
+        type: string
+      id:
+        type: integer
+      tasksCount:
+        type: integer
+      teamId:
+        type: integer
+      teamName:
+        type: string
+    type: object
+  models.UpdateTaskRequest:
+    description: Запрос на обновление существующей задачи
+    properties:
+      assigneeId:
+        type: integer
+      description:
+        maxLength: 500
+        minLength: 1
+        type: string
+      priority:
+        enum:
+        - Low
+        - Medium
+        - High
+        example: Medium
+        type: string
+      status:
+        enum:
+        - Backlog
+        - InProgress
+        - Done
+        example: Done
+        type: string
+      title:
+        maxLength: 100
+        minLength: 1
+        type: string
+    required:
+    - assigneeId
+    - description
+    - title
+    type: object
+  models.UpdateTaskResponse:
+    description: Ответ после успешного обновления задачи
+    properties:
+      message:
+        type: string
+    type: object
+  models.UpdateTaskStatusRequest:
+    properties:
+      status:
+        enum:
+        - Backlog
+        - InProgress
+        - Done
+        example: Done
+        type: string
+    type: object
+  models.UpdateTaskStatusResponse:
+    properties:
+      message:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API для управления задачами и досками
+  title: Avito FE Tech Internship 2025 Wave 2 API
+  version: "1.0"
+paths:
+  /boards:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает массив досок с основной информацией и количеством задач
+        в каждой
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешный ответ со списком досок
+          schema:
+            items:
+              $ref: '#/definitions/models.GetBoardsResponse'
+            type: array
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/errs.ErrorResponse'
+      summary: Получить список всех досок
+      tags:
+      - Доски
+  /boards/{boardId}:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает все задачи, принадлежащие указанной доске
+      parameters:
+      - description: ID доски
+        in: path
+        name: boardId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.GetTasksOnBoardResponse'
+            type: array
+        "400":
+          description: Неверный формат ID доски
+          schema:
+            $ref: '#/definitions/errs.ErrorResponse'
+        "404":
+          description: Доска не найдена
+          schema:
+            $ref: '#/definitions/errs.ErrorResponse'
+        "500":
+          description: Ошибка сервера
+          schema:
+            $ref: '#/definitions/errs.ErrorResponse'
+      summary: Получить задачи доски
+      tags:
+      - Доски
+  /tasks:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает массив задач с полной информацией, включая данные исполнителей
+        и досок
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.GetTasksResponse'
+            type: array
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/errs.ErrorResponse'
+      summary: Получить список всех задач
+      tags:
+      - Задачи
+  /tasks/{taskId}:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает полную информацию о задаче, включая данные исполнителя
+        и доски
+      parameters:
+      - description: ID задачи
+        in: path
+        name: taskId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.GetTaskByIDResponse'
+        "400":
+          description: Некорректный ID задачи
+          schema:
+            $ref: '#/definitions/errs.ErrorResponse'
+        "404":
+          description: Задача не найдена
+          schema:
+            $ref: '#/definitions/errs.ErrorResponse'
+      summary: Получить задачу по ID
+      tags:
+      - Задачи
+  /tasks/create:
+    post:
+      consumes:
+      - application/json
+      description: Создает новую задачу с указанными параметрами
+      parameters:
+      - description: Данные для создания задачи
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateTaskRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Задача успешно создана
+          schema:
+            $ref: '#/definitions/models.CreateTaskResponse'
+        "400":
+          description: Неверный формат данных или параметры
+          schema:
+            $ref: '#/definitions/errs.ErrorResponse'
+        "404":
+          description: Доска или пользователь не найдены
+          schema:
+            $ref: '#/definitions/errs.ErrorResponse'
+        "500":
+          description: Ошибка сервера при создании задачи
+          schema:
+            $ref: '#/definitions/errs.ErrorResponse'
+      summary: Создать новую задачу
+      tags:
+      - Задачи
+  /tasks/update/{taskId}:
+    put:
+      consumes:
+      - application/json
+      description: Обновляет задачу по указанному ID
+      parameters:
+      - description: ID задачи
+        in: path
+        name: taskId
+        required: true
+        type: integer
+      - description: Данные для обновления задачи
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateTaskRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UpdateTaskResponse'
+        "400":
+          description: Некорректные данные
+          schema:
+            $ref: '#/definitions/errs.ErrorResponse'
+        "404":
+          description: Задача не найдена
+          schema:
+            $ref: '#/definitions/errs.ErrorResponse'
+        "500":
+          description: Ошибка при обновлении задачи
+          schema:
+            $ref: '#/definitions/errs.ErrorResponse'
+      summary: Обновить задачу
+      tags:
+      - Задачи
+  /tasks/updateStatus/{taskId}:
+    put:
+      consumes:
+      - application/json
+      description: Обновляет статус задачи по указанному ID
+      parameters:
+      - description: ID задачи
+        in: path
+        name: taskId
+        required: true
+        type: integer
+      - description: Данные для обновления статуса задачи
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateTaskStatusRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UpdateTaskStatusResponse'
+        "400":
+          description: Некорректные данные
+          schema:
+            $ref: '#/definitions/errs.ErrorResponse'
+        "404":
+          description: Задача не найдена
+          schema:
+            $ref: '#/definitions/errs.ErrorResponse'
+        "500":
+          description: Ошибка при обновлении статуса задачи
+          schema:
+            $ref: '#/definitions/errs.ErrorResponse'
+      summary: Обновить статус задачи
+      tags:
+      - Задачи
+  /teams:
+    get:
+      consumes:
+      - application/json
+      description: Получает информацию о всех командах, включая количество пользователей
+        и досок
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.GetTeamsResponse'
+            type: array
+        "500":
+          description: Ошибка при получении команд
+          schema:
+            $ref: '#/definitions/errs.ErrorResponse'
+      summary: Получить информацию о всех командах
+      tags:
+      - Команды
+  /teams/{teamId}:
+    get:
+      consumes:
+      - application/json
+      description: Получает информацию о команде по ID, включая пользователей и доски
+      parameters:
+      - description: ID команды
+        in: path
+        name: teamId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.GetTeamResponse'
+        "400":
+          description: Некорректный teamID
+          schema:
+            $ref: '#/definitions/errs.ErrorResponse'
+        "404":
+          description: Команда не найдена
+          schema:
+            $ref: '#/definitions/errs.ErrorResponse'
+      summary: Получить информацию о команде
+      tags:
+      - ""
+  /users:
+    get:
+      consumes:
+      - application/json
+      description: Получает информацию о всех пользователях, включая их команды и
+        количество задач
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.GetUsersResponse'
+            type: array
+        "500":
+          description: Ошибка при получении пользователей
+          schema:
+            $ref: '#/definitions/errs.ErrorResponse'
+      summary: Получить информацию о всех пользователях
+      tags:
+      - Пользователи
+  /users/{id}/tasks:
+    get:
+      consumes:
+      - application/json
+      description: Получает список задач для указанного пользователя по его ID
+      parameters:
+      - description: ID пользователя
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.GetUserTasksResponse'
+            type: array
+        "400":
+          description: Некорректный userID
+          schema:
+            $ref: '#/definitions/errs.ErrorResponse'
+        "500":
+          description: Ошибка при получении задач пользователя
+          schema:
+            $ref: '#/definitions/errs.ErrorResponse'
+      summary: Получить задачи пользователя
+      tags:
+      - Пользователи
+swagger: "2.0"
