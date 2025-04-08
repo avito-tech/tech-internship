@@ -8,6 +8,7 @@
 
 # Задание 1
 Перед вами скриншот страницы Авито с результатами поиска. Изучите его, перечислите все имеющиеся баги, и укажите их приоритет (high, medium, low).
+
 ![Image](https://github.com/user-attachments/assets/535dff69-3c6d-4328-9806-81b624ee4064)
 
 # Задание 2.1.
@@ -26,7 +27,7 @@
 
 Host - [https://qa-internship.avito.com](https://qa-internship.avito.com/)
 
-Postman-коллекция: тут
+Postman-коллекция: [тут](https://github.com/avito-tech/tech-internship/blob/main/Tech%20Internships/QA/QA-trainee-assignment-spring-2025/postman_collection.json)
 
 ### Краткое описание сервиса:
 
