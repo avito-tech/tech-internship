@@ -678,9 +678,6 @@ const docTemplate = `{
                 "assignee": {
                     "$ref": "#/definitions/models.AssigneeUserForTask"
                 },
-                "assigneeId": {
-                    "type": "integer"
-                },
                 "boardId": {
                     "type": "integer"
                 },

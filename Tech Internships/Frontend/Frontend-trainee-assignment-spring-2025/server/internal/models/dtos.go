@@ -26,7 +26,6 @@ type GetTasksResponse struct {
 	Description string              `json:"description"`
 	Priority    string              `json:"priority" enums:"Low,Medium,High" example:"Medium"`
 	Status      string              `json:"status" enums:"Backlog,InProgress,Done" example:"Done"`
-	AssigneeID  uint                `json:"assigneeId"`
 	Assignee    AssigneeUserForTask `json:"assignee"`
 	BoardID     uint                `json:"boardId"`
 	BoardName   string              `json:"boardName"`

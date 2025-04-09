@@ -67,6 +67,7 @@ func prepareTasksResponse(tasks []models.Task) []models.GetTasksResponse {
 				Email:     task.Assignee.Email,
 				AvatarURL: task.Assignee.AvatarURL,
 			},
+			BoardID:   task.Board.ID,
 			BoardName: task.Board.Name,
 		}
 	}
