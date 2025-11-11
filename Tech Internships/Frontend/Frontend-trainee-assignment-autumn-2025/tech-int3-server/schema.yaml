@@ -1,0 +1,618 @@
+openapi: 3.0.0
+info:
+  title: API для модерации объявлений
+  description: Упрощенная версия системы модерации объявлений платформы Авито
+  version: 1.0.0
+  contact:
+    name: Стажерское задание
+    url: https://avito.ru
+
+servers:
+  - url: http://localhost:3001/api/v1
+    description: Локальный сервер для разработки
+
+paths:
+  /ads:
+    get:
+      summary: Получить список объявлений с фильтрацией и пагинацией
+      tags:
+        - Объявления
+      parameters:
+        - name: page
+          in: query
+          description: Номер страницы
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          description: Количество элементов на странице
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+        - name: status
+          in: query
+          description: Фильтр по статусу (можно указывать несколько)
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+              enum: [pending, approved, rejected, draft]
+        - name: categoryId
+          in: query
+          description: Фильтр по ID категории
+          required: false
+          schema:
+            type: integer
+        - name: minPrice
+          in: query
+          description: Минимальная цена
+          required: false
+          schema:
+            type: number
+        - name: maxPrice
+          in: query
+          description: Максимальная цена
+          required: false
+          schema:
+            type: number
+        - name: search
+          in: query
+          description: Поиск по названию или описанию
+          required: false
+          schema:
+            type: string
+        - name: sortBy
+          in: query
+          description: Сортировка по полю
+          required: false
+          schema:
+            type: string
+            enum: [createdAt, price, priority]
+            default: createdAt
+        - name: sortOrder
+          in: query
+          description: Порядок сортировки
+          required: false
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+      responses:
+        '200':
+          description: Список объявлений
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ads:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Advertisement'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /ads/{id}:
+    get:
+      summary: Получить объявление по ID
+      tags:
+        - Объявления
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Детальная информация об объявлении
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Advertisement'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /ads/{id}/approve:
+    post:
+      summary: Одобрить объявление
+      tags:
+        - Объявления
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Объявление успешно одобрено
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  ad:
+                    $ref: '#/components/schemas/Advertisement'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /ads/{id}/reject:
+    post:
+      summary: Отклонить объявление
+      tags:
+        - Объявления
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - reason
+              properties:
+                reason:
+                  type: string
+                  description: Причина отклонения
+                  enum: [Запрещенный товар, Неверная категория, Некорректное описание, Проблемы с фото, Подозрение на мошенничество, Другое]
+                comment:
+                  type: string
+                  description: Дополнительный комментарий
+      responses:
+        '200':
+          description: Объявление успешно отклонено
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  ad:
+                    $ref: '#/components/schemas/Advertisement'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /ads/{id}/request-changes:
+    post:
+      summary: Запросить изменения в объявлении
+      tags:
+        - Объявления
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - reason
+              properties:
+                reason:
+                  type: string
+                  description: Причина запроса изменений
+                  enum: [Запрещенный товар, Неверная категория, Некорректное описание, Проблемы с фото, Подозрение на мошенничество, Другое]
+                comment:
+                  type: string
+                  description: Дополнительный комментарий
+      responses:
+        '200':
+          description: Запрос изменений успешно отправлен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  ad:
+                    $ref: '#/components/schemas/Advertisement'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /stats/summary:
+    get:
+      summary: Получить общую статистику модератора
+      tags:
+        - Статистика
+      parameters:
+        - name: period
+          in: query
+          description: Период для фильтрации статистики
+          required: false
+          schema:
+            type: string
+            enum: [today, week, month, custom]
+        - name: startDate
+          in: query
+          description: Начальная дата для произвольного периода (YYYY-MM-DD)
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          description: Конечная дата для произвольного периода (YYYY-MM-DD)
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Общая статистика
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatsSummary'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /stats/chart/activity:
+    get:
+      summary: Получить данные графика активности
+      tags:
+        - Статистика
+      parameters:
+        - name: period
+          in: query
+          description: Период для фильтрации статистики
+          required: false
+          schema:
+            type: string
+            enum: [today, week, month, custom]
+        - name: startDate
+          in: query
+          description: Начальная дата для произвольного периода (YYYY-MM-DD)
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          description: Конечная дата для произвольного периода (YYYY-MM-DD)
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Данные графика активности по дням
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ActivityData'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /stats/chart/decisions:
+    get:
+      summary: Получить данные графика решений
+      tags:
+        - Статистика
+      parameters:
+        - name: period
+          in: query
+          description: Период для фильтрации статистики
+          required: false
+          schema:
+            type: string
+            enum: [today, week, month, custom]
+        - name: startDate
+          in: query
+          description: Начальная дата для произвольного периода (YYYY-MM-DD)
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          description: Конечная дата для произвольного периода (YYYY-MM-DD)
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Распределение решений
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DecisionsData'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /stats/chart/categories:
+    get:
+      summary: Получить данные графика категорий
+      tags:
+        - Статистика
+      parameters:
+        - name: period
+          in: query
+          description: Период для фильтрации статистики
+          required: false
+          schema:
+            type: string
+            enum: [today, week, month, custom]
+        - name: startDate
+          in: query
+          description: Начальная дата для произвольного периода (YYYY-MM-DD)
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          description: Конечная дата для произвольного периода (YYYY-MM-DD)
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Распределение по категориям
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: integer
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /moderators/me:
+    get:
+      summary: Получить информацию о текущем модераторе
+      tags:
+        - Модераторы
+      responses:
+        '200':
+          description: Информация о модераторе
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Moderator'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  schemas:
+    Advertisement:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+        category:
+          type: string
+        categoryId:
+          type: integer
+        status:
+          type: string
+          enum: [pending, approved, rejected, draft]
+        priority:
+          type: string
+          enum: [normal, urgent]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        images:
+          type: array
+          items:
+            type: string
+        seller:
+          $ref: '#/components/schemas/Seller'
+        characteristics:
+          type: object
+          additionalProperties:
+            type: string
+        moderationHistory:
+          type: array
+          items:
+            $ref: '#/components/schemas/ModerationHistory'
+    
+    Seller:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        rating:
+          type: string
+        totalAds:
+          type: integer
+        registeredAt:
+          type: string
+          format: date-time
+    
+    ModerationHistory:
+      type: object
+      properties:
+        id:
+          type: integer
+        moderatorId:
+          type: integer
+        moderatorName:
+          type: string
+        action:
+          type: string
+          enum: [approved, rejected, requestChanges]
+        reason:
+          type: string
+          nullable: true
+        comment:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+    
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+        totalPages:
+          type: integer
+        totalItems:
+          type: integer
+        itemsPerPage:
+          type: integer
+    
+    StatsSummary:
+      type: object
+      properties:
+        totalReviewed:
+          type: integer
+        totalReviewedToday:
+          type: integer
+        totalReviewedThisWeek:
+          type: integer
+        totalReviewedThisMonth:
+          type: integer
+        approvedPercentage:
+          type: number
+        rejectedPercentage:
+          type: number
+        requestChangesPercentage:
+          type: number
+        averageReviewTime:
+          type: integer
+    
+    ActivityData:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        approved:
+          type: integer
+        rejected:
+          type: integer
+        requestChanges:
+          type: integer
+    
+    DecisionsData:
+      type: object
+      properties:
+        approved:
+          type: number
+        rejected:
+          type: number
+        requestChanges:
+          type: number
+    
+    Moderator:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+        statistics:
+          $ref: '#/components/schemas/ModeratorStats'
+        permissions:
+          type: array
+          items:
+            type: string
+    
+    ModeratorStats:
+      type: object
+      properties:
+        totalReviewed:
+          type: integer
+        todayReviewed:
+          type: integer
+        thisWeekReviewed:
+          type: integer
+        thisMonthReviewed:
+          type: integer
+        averageReviewTime:
+          type: integer
+        approvalRate:
+          type: number
+  
+  responses:
+    BadRequest:
+      description: Некорректный запрос
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              message:
+                type: string
+    
+    NotFound:
+      description: Ресурс не найден
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              id:
+                type: integer
+    
+    InternalServerError:
+      description: Внутренняя ошибка сервера
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              message:
+                type: string
