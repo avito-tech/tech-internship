@@ -1,5 +1,5 @@
 # Тестовое задание для стажёра Frontend (осенняя волна 2025)
-![scheme](https://github.com/)
+![scheme](https://github.com/avito-tech/tech-internship/blob/main/Tech%20Internships/Frontend/Frontend-trainee-assignment-autumn-2025/schema%20(3).jpg)
 
 ## **Система управления объявлениями для модерации**
 
