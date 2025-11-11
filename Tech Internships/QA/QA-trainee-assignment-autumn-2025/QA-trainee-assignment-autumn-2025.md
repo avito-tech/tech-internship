@@ -9,6 +9,7 @@
 ## **Задание 1**
 Перед вами скриншот страницы карьерного сайта Авито. Изучите его, перечислите все имеющиеся баги, и укажите их приоритет (high, medium, low).
 
+![bugs](https://github.com/avito-tech/tech-internship/blob/main/Tech%20Internships/QA/QA-trainee-assignment-autumn-2025/Bugs.png)
 
 ## **Задание 2**
 
