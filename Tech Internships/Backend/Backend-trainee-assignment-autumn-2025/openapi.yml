@@ -175,9 +175,6 @@ paths:
     get:
       tags: [Teams]
       summary: Получить команду с участниками
-      security:
-        - AdminToken: []
-        - UserToken: []
       parameters:
         - $ref: '#/components/parameters/TeamNameQuery'
       responses:
@@ -206,8 +203,6 @@ paths:
     post:
       tags: [Users]
       summary: Установить флаг активности пользователя
-      security:
-        - AdminToken: []
       requestBody:
         required: true
         content:
@@ -254,8 +249,6 @@ paths:
     post:
       tags: [PullRequests]
       summary: Создать PR и автоматически назначить до 2 ревьюверов из команды автора
-      security:
-        - AdminToken: []
       requestBody:
         required: true
         content:
@@ -305,8 +298,6 @@ paths:
     post:
       tags: [PullRequests]
       summary: Пометить PR как MERGED (идемпотентная операция)
-      security:
-        - AdminToken: []
       requestBody:
         required: true
         content:
@@ -346,8 +337,6 @@ paths:
     post:
       tags: [PullRequests]
       summary: Переназначить конкретного ревьювера на другого из его команды
-      security:
-        - AdminToken: []
       requestBody:
         required: true
         content:
@@ -411,9 +400,6 @@ paths:
     get:
       tags: [Users]
       summary: Получить PR'ы, где пользователь назначен ревьювером
-      security:
-        - AdminToken: []
-        - UserToken: []
       parameters:
         - $ref: '#/components/parameters/UserIdQuery'
       responses:
