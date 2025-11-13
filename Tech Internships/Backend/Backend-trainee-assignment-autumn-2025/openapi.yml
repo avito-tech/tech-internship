@@ -239,11 +239,6 @@ paths:
           content:
             application/json:
               schema: { $ref: '#/components/schemas/ErrorResponse' }
-        '401':
-          description: Нет/неверный админский токен
-          content:
-            application/json:
-              schema: { $ref: '#/components/schemas/ErrorResponse' }
 
   /pullRequest/create:
     post:
