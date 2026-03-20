@@ -77,7 +77,7 @@
 
 ### **1. Страница списка объявлений (/ads)**
 
-![][image1]  
+![](https://github.com/avito-tech/tech-internship/blob/main/Tech%20Internships/Frontend/Frontend-trainee-assignment-spring-2026/list.png)
 Отображение всех объявлений продавца.
 
 Шапка страницы:
@@ -117,7 +117,7 @@
 
 ### **2. Страница просмотра объявления (/ads/:id)**
 
-![][image2]  
+![](https://github.com/avito-tech/tech-internship/blob/main/Tech%20Internships/Frontend/Frontend-trainee-assignment-spring-2026/item.png)
 Отображение полной информации об объявлении в режиме просмотра.
 
 Отображаемая информация:
@@ -141,7 +141,7 @@
 
 ### **3. Страница редактирования объявления (/ads/:id/edit)**
 
-**![Страница просмотра объявления][image3]**
+**![Страница просмотра объявления](https://github.com/avito-tech/tech-internship/blob/main/Tech%20Internships/Frontend/Frontend-trainee-assignment-spring-2026/item_form.png)**
 
 Форма редактирования существующего объявления.
 
