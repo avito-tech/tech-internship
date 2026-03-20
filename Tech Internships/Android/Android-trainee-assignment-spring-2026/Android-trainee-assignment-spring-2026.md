@@ -175,7 +175,7 @@
 
 Для навигации используем NavigationDrawer (slide-in menu) 
 
-![][image1]
+![](https://github.com/avito-tech/tech-internship/blob/main/Tech%20Internships/Android/Android-trainee-assignment-spring-2026/navigation.png)
 
 Меню состоит из следующих пунктов:
 
