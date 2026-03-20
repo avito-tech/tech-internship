@@ -3,6 +3,8 @@
 Найдите баги на приложенном скриншоте, приоритезируйте их и перечислите списком. Приоритеты: P0 — критический, P1 — высокий, P2 — средний, P3 — низкий.  
 Пример: *P0 — не открывается объявление из выдачи.* 
 
+![](https://github.com/avito-tech/tech-internship/blob/main/Tech%20Internships/QA/QA-trainee-assignment-spring-2026/bags.png)
+
 # Задание 2.1: Тесты API
 
 **Условие:**
@@ -15,7 +17,7 @@
 * Получить статистику по айтем id  
 * Host — https://qa-internship.avito.com
 
-**Postman-коллекцию можно найти здесь.**
+**Postman-коллекцию можно найти [здесь](https://github.com/avito-tech/tech-internship/blob/main/Tech%20Internships/QA/QA-trainee-assignment-spring-2026/postman_collection.json).**
 
 **Особенности:**
 
@@ -85,7 +87,7 @@
 
 **Условие**  
    
-На [сайте](https://cerulean-praline-8e5aa6.netlify.app/) размещена платформа модерации объявлений.  
+На [сайте](https://cerulean-praline-8e5aa6.netlify.app) размещена платформа модерации объявлений.  
 Платформа состоит из:
 
 * главной страницы, где находят объявления (`/`, `/list`)  
