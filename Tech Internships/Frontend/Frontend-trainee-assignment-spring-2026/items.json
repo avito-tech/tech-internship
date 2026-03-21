@@ -1,0 +1,423 @@
+[
+  {
+    "id": 1,
+    "category": "auto",
+    "title": "Почти новая Mitsubishi Lancer",
+    "description": "",
+    "price": 300000,
+    "createdAt": "2026-02-12T00:00:00.000Z",
+    "updatedAt": "2026-02-12T00:00:00.000Z",
+    "params": {
+      "brand": "Mitsubishi",
+      "model": "Lancer",
+      "yearOfManufacture": 2005,
+      "transmission": "automatic",
+      "mileage": 200000,
+      "enginePower": 98
+    }
+  },
+  {
+    "id": 2,
+    "category": "real_estate",
+    "title": "Видовая двушка",
+    "description": "",
+    "price": 23200000,
+    "createdAt": "2026-02-14T00:00:00.000Z",
+    "updatedAt": "2026-02-14T00:00:00.000Z",
+    "params": {
+      "type": "flat",
+      "address": "г. Москва, Кастанаевская улица, 42к1",
+      "area": 45.2,
+      "floor": 4
+    }
+  },
+  {
+    "id": 3,
+    "category": "electronics",
+    "title": "Новенький айфон 17 Про Макс",
+    "description": "",
+    "price": 200000,
+    "createdAt": "2026-03-10T00:00:00.000Z",
+    "updatedAt": "2026-03-10T00:00:00.000Z",
+    "params": {
+      "type": "phone",
+      "brand": "Apple",
+      "model": "iPhone 17 Pro Max",
+      "condition": "new",
+      "color": "Чёрный"
+    }
+  },
+  {
+    "id": 4,
+    "category": "real_estate",
+    "title": "Уютная комната в общежитии",
+    "description": "",
+    "price": 15000,
+    "createdAt": "2026-03-05T00:00:00.000Z",
+    "updatedAt": "2026-03-05T00:00:00.000Z",
+    "params": {
+      "type": "room",
+      "address": "г. Санкт-Петербург, Витебский проспект, 101к2",
+      "area": 7.6,
+      "floor": 2
+    }
+  },
+  {
+    "id": 5,
+    "category": "electronics",
+    "title": "Наушники JBL Tour one m2",
+    "description": "",
+    "price": 25000,
+    "createdAt": "2026-03-02T00:00:00.000Z",
+    "updatedAt": "2026-03-02T00:00:00.000Z",
+    "params": {
+      "type": "misc",
+      "condition": "new",
+      "color": "Белый"
+    }
+  },
+  {
+    "id": 6,
+    "category": "electronics",
+    "title": "Топовый MP3-плеер",
+    "description": "",
+    "price": 1200,
+    "createdAt": "2026-03-06T00:00:00.000Z",
+    "updatedAt": "2026-03-06T00:00:00.000Z",
+    "params": {}
+  },
+  {
+    "id": 7,
+    "category": "auto",
+    "title": "Subaru Forester, 2010, 350 000 км",
+    "description": "",
+    "price": 990000,
+    "createdAt": "2026-02-18T00:00:00.000Z",
+    "updatedAt": "2026-02-18T00:00:00.000Z",
+    "params": {}
+  },
+  {
+    "id": 8,
+    "category": "auto",
+    "title": "ВАЗ (LADA) Niva 1.7 MT, 2020, 102 000 км",
+    "description": "",
+    "price": 990000,
+    "createdAt": "2026-02-01T00:00:00.000Z",
+    "updatedAt": "2026-02-01T00:00:00.000Z",
+    "params": {
+      "brand": "Lada",
+      "model": "Niva",
+      "yearOfManufacture": "2020",
+      "transmission": "automatic"
+    }
+  },
+  {
+    "id": 9,
+    "category": "real_estate",
+    "title": "Квартира-студия, 19 м², 3/5 эт.",
+    "description": "",
+    "price": 13600000,
+    "createdAt": "2026-02-25T00:00:00.000Z",
+    "updatedAt": "2026-02-25T00:00:00.000Z",
+    "params": {
+      "type": "flat"
+    }
+  },
+  {
+    "id": 10,
+    "category": "real_estate",
+    "title": "Коттедж 198,2 м² на участке 12 сот.",
+    "description": "",
+    "price": 25000000,
+    "createdAt": "2026-03-09T00:00:00.000Z",
+    "updatedAt": "2026-03-09T00:00:00.000Z",
+    "params": {
+      "type": "house"
+    }
+  },
+  {
+    "id": 11,
+    "category": "electronics",
+    "title": "Проигрыватель винила Radiotehnika эп-101",
+    "description": "",
+    "price": 4400,
+    "createdAt": "2026-03-05T00:00:00.000Z",
+    "updatedAt": "2026-03-05T00:00:00.000Z",
+    "params": {
+      "type": "misc",
+      "condition": "used",
+      "color": "Серый"
+    }
+  },
+  {
+    "id": 12,
+    "category": "auto",
+    "title": "Smart Fortwo 1.0 AMT, 2009",
+    "description": "",
+    "price": 750000,
+    "createdAt": "2026-03-03T00:00:00.000Z",
+    "updatedAt": "2026-03-03T00:00:00.000Z",
+    "params": {
+      "yearOfManufacture": "2009"
+    }
+  },
+  {
+    "id": 13,
+    "category": "electronics",
+    "title": "Телевизор lg на запчасти",
+    "description": "",
+    "price": 1850,
+    "createdAt": "2026-02-11T00:00:00.000Z",
+    "updatedAt": "2026-02-11T00:00:00.000Z",
+    "params": {}
+  },
+  {
+    "id": 14,
+    "category": "real_estate",
+    "title": "3-к. квартира, 98 м², 9/23 эт.",
+    "description": "",
+    "price": 32000000,
+    "createdAt": "2026-02-16T00:00:00.000Z",
+    "updatedAt": "2026-02-16T00:00:00.000Z",
+    "params": {
+      "type": "flat",
+      "area": 98
+    }
+  },
+  {
+    "id": 15,
+    "category": "real_estate",
+    "title": "Таунхаус 331 м² на участке 2,4 сот.",
+    "description": "",
+    "price": 32000000,
+    "createdAt": "2026-01-22T00:00:00.000Z",
+    "updatedAt": "2026-01-22T00:00:00.000Z",
+    "params": {
+      "type": "house",
+      "area": 331
+    }
+  },
+  {
+    "id": 16,
+    "category": "electronics",
+    "title": "Холодильник Bosch",
+    "description": "",
+    "price": 9600,
+    "createdAt": "2026-01-11T00:00:00.000Z",
+    "updatedAt": "2026-01-11T00:00:00.000Z",
+    "params": {
+      "type": "misc",
+      "brand": "Bosch",
+      "color": "Чёрный"
+    }
+  },
+  {
+    "id": 17,
+    "category": "auto",
+    "title": "BMW X1",
+    "description": "",
+    "price": 300000,
+    "createdAt": "2026-02-17T00:00:00.000Z",
+    "updatedAt": "2026-02-17T00:00:00.000Z",
+    "params": {
+      "brand": "BMW",
+      "model": "X1",
+      "yearOfManufacture": "2016",
+      "transmission": "automatic",
+      "enginePower": 190
+    }
+  },
+  {
+    "id": 18,
+    "category": "auto",
+    "title": "Mazda 6 2.0 AT, 2013",
+    "description": "",
+    "price": 300000,
+    "createdAt": "2026-01-12T00:00:00.000Z",
+    "updatedAt": "2026-01-12T00:00:00.000Z",
+    "params": {
+      "brand": "Mazda",
+      "model": "6",
+      "transmission": "automatic",
+      "mileage": 250000
+    }
+  },
+  {
+    "id": 19,
+    "category": "real_estate",
+    "title": "5-к. квартира, 156 м², 12/13 эт.",
+    "description": "",
+    "price": 3700000,
+    "createdAt": "2026-02-14T00:00:00.000Z",
+    "updatedAt": "2026-02-14T00:00:00.000Z",
+    "params": {
+      "type": "flat",
+      "floor": 12,
+      "area": 156
+    }
+  },
+  {
+    "id": 20,
+    "category": "electronics",
+    "title": "Стиральная машина. На гарантии",
+    "description": "",
+    "price": 9999,
+    "createdAt": "2026-03-11T00:00:00.000Z",
+    "updatedAt": "2026-03-11T00:00:00.000Z",
+    "params": {}
+  },
+  {
+    "id": 21,
+    "category": "electronics",
+    "title": "Бу ноутбук Новый завоз",
+    "description": "",
+    "price": 11900,
+    "createdAt": "2026-01-08T00:00:00.000Z",
+    "updatedAt": "2026-01-08T00:00:00.000Z",
+    "params": {}
+  },
+  {
+    "id": 22,
+    "category": "electronics",
+    "title": "Игровой монстр",
+    "description": "",
+    "price": 11990,
+    "createdAt": "2026-03-07T00:00:00.000Z",
+    "updatedAt": "2026-03-07T00:00:00.000Z",
+    "params": {
+      "type": "misc",
+      "color": "Красный"
+    }
+  },
+  {
+    "id": 23,
+    "category": "real_estate",
+    "title": "Нужно брать!",
+    "description": "",
+    "price": 100000,
+    "createdAt": "2026-02-26T00:00:00.000Z",
+    "updatedAt": "2026-02-26T00:00:00.000Z",
+    "params": {
+      "type": "flat",
+      "area": 60.3
+    }
+  },
+  {
+    "id": 24,
+    "category": "auto",
+    "title": "Для рыбалки самое то",
+    "description": "",
+    "price": 500000,
+    "createdAt": "2026-03-10T00:00:00.000Z",
+    "updatedAt": "2026-03-10T00:00:00.000Z",
+    "params": {
+      "brand": "Lada",
+      "model": "Granta"
+    }
+  },
+  {
+    "id": 25,
+    "category": "real_estate",
+    "title": "Нужно брать!",
+    "description": "",
+    "price": 100000,
+    "createdAt": "2026-03-06T00:00:00.000Z",
+    "updatedAt": "2026-03-06T00:00:00.000Z",
+    "params": {
+      "type": "flat"
+    }
+  },
+  {
+    "id": 26,
+    "category": "real_estate",
+    "title": "Идеальная дача",
+    "description": "",
+    "price": 12500000,
+    "createdAt": "2026-02-02T00:00:00.000Z",
+    "updatedAt": "2026-02-02T00:00:00.000Z",
+    "params": {
+      "type": "house"
+    }
+  },
+  {
+    "id": 27,
+    "category": "electronics",
+    "title": "Убийца Apple",
+    "description": "",
+    "price": 13990,
+    "createdAt": "2026-01-13T00:00:00.000Z",
+    "updatedAt": "2026-01-13T00:00:00.000Z",
+    "params": {
+      "type": "phone",
+      "brand": "Xiaomi",
+      "model": "Redmi Note 14S",
+      "condition": "new",
+      "color": "Чёрный"
+    }
+  },
+  {
+    "id": 28,
+    "category": "electronics",
+    "title": "Саундбар Sony 5.1 HT-S40R",
+    "description": "",
+    "price": 15000,
+    "createdAt": "2026-02-28T00:00:00.000Z",
+    "updatedAt": "2026-02-28T00:00:00.000Z",
+    "params": {
+      "type": "misc",
+      "brand": "Sony",
+      "color": "Чёрный"
+    }
+  },
+  {
+    "id": 29,
+    "category": "electronics",
+    "title": "Телевизор Samsung с тумбой-кронштейном",
+    "description": "",
+    "price": 20000,
+    "createdAt": "2026-02-25T00:00:00.000Z",
+    "updatedAt": "2026-02-25T00:00:00.000Z",
+    "params": {
+      "type": "misc",
+      "brand": "Sony",
+      "color": "Чёрный"
+    }
+  },
+  {
+    "id": 30,
+    "category": "real_estate",
+    "title": "Аренда кладовки",
+    "description": "",
+    "price": 799,
+    "createdAt": "2026-03-02T00:00:00.000Z",
+    "updatedAt": "2026-03-02T00:00:00.000Z",
+    "params": {
+      "type": "room"
+    }
+  },
+  {
+    "id": 31,
+    "category": "auto",
+    "title": "Mercedes-Benz Actros",
+    "description": "",
+    "price": 2460000,
+    "createdAt": "2026-03-08T00:00:00.000Z",
+    "updatedAt": "2026-03-08T00:00:00.000Z",
+    "params": {
+      "brand": "Mercedes-Benz",
+      "model": "Actros",
+      "yearOfManufacture": 2017,
+      "enginePower": 410
+    }
+  },
+  {
+    "id": 32,
+    "category": "auto",
+    "title": "Daewoo Nexia",
+    "description": "",
+    "price": 185000,
+    "createdAt": "2026-03-10T00:00:00.000Z",
+    "updatedAt": "2026-03-10T00:00:00.000Z",
+    "params": {}
+  }
+]
