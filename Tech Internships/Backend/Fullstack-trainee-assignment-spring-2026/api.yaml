@@ -1,0 +1,652 @@
+openapi: 3.0.3
+info:
+  title: AI Assistants Catalog
+  description: Каталог AI-ассистентов с React-клиентом и мокируемым LLM-провайдером
+  version: "1.0.0"
+
+servers:
+  - url: http://localhost:8080
+
+tags:
+  - name: System
+  - name: Auth
+  - name: Categories
+  - name: Assistants
+  - name: Runs
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    CategoryIdPath:
+      name: categoryId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: Идентификатор категории
+    AssistantIdPath:
+      name: assistantId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: Идентификатор ассистента
+
+  schemas:
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code:
+              type: string
+              enum:
+                - INVALID_REQUEST
+                - UNAUTHORIZED
+                - FORBIDDEN
+                - NOT_FOUND
+                - CATEGORY_NOT_FOUND
+                - ASSISTANT_NOT_FOUND
+                - ASSISTANT_INACTIVE
+                - LLM_PROVIDER_ERROR
+                - INTERNAL_ERROR
+            message:
+              type: string
+      example:
+        error:
+          code: INVALID_REQUEST
+          message: invalid request
+
+    Pagination:
+      type: object
+      required: [page, pageSize, total]
+      properties:
+        page:
+          type: integer
+          minimum: 1
+        pageSize:
+          type: integer
+          minimum: 1
+        total:
+          type: integer
+          minimum: 0
+
+    Role:
+      type: string
+      enum: [admin, user]
+
+    Token:
+      type: object
+      required: [token, user]
+      properties:
+        token:
+          type: string
+          description: JWT для заголовка Authorization Bearer
+        user:
+          $ref: "#/components/schemas/User"
+
+    User:
+      type: object
+      required: [id, email, role]
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        role:
+          $ref: "#/components/schemas/Role"
+        createdAt:
+          type: string
+          format: date-time
+          nullable: true
+
+    Category:
+      type: object
+      required: [id, name]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: Еда
+        description:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+          nullable: true
+
+    CategoryCreateIn:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        description:
+          type: string
+          nullable: true
+
+    Assistant:
+      type: object
+      required: [id, categoryId, name, description, model, isActive]
+      properties:
+        id:
+          type: string
+          format: uuid
+        categoryId:
+          type: string
+          format: uuid
+        categoryName:
+          type: string
+          nullable: true
+        name:
+          type: string
+          example: Повар
+        description:
+          type: string
+          example: Составляет подробный рецепт по списку ингредиентов
+        model:
+          type: string
+          example: mock-smart
+        systemPrompt:
+          type: string
+          nullable: true
+          description: Может быть скрыт от обычного пользователя по решению кандидата
+        exampleUserPrompt:
+          type: string
+          nullable: true
+          example: курица, рис, томаты, сыр
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+          nullable: true
+        updatedAt:
+          type: string
+          format: date-time
+          nullable: true
+
+    AssistantCreateIn:
+      type: object
+      required: [categoryId, name, description, model, systemPrompt]
+      properties:
+        categoryId:
+          type: string
+          format: uuid
+        name:
+          type: string
+          minLength: 1
+        description:
+          type: string
+          minLength: 1
+        model:
+          type: string
+          minLength: 1
+        systemPrompt:
+          type: string
+          minLength: 1
+        exampleUserPrompt:
+          type: string
+          nullable: true
+        isActive:
+          type: boolean
+          default: true
+
+    AssistantUpdateIn:
+      type: object
+      required: [categoryId, name, description, model, systemPrompt, isActive]
+      properties:
+        categoryId:
+          type: string
+          format: uuid
+        name:
+          type: string
+          minLength: 1
+        description:
+          type: string
+          minLength: 1
+        model:
+          type: string
+          minLength: 1
+        systemPrompt:
+          type: string
+          minLength: 1
+        exampleUserPrompt:
+          type: string
+          nullable: true
+        isActive:
+          type: boolean
+
+    RunStatus:
+      type: string
+      enum: [pending, success, failed]
+      description: >
+        pending — запуск создан, но ответ ещё не получен;
+        success — запуск завершился успешно;
+        failed — запуск завершился ошибкой.
+
+    AssistantRun:
+      type: object
+      required: [id, assistantId, userId, model, userPrompt, status]
+      properties:
+        id:
+          type: string
+          format: uuid
+        assistantId:
+          type: string
+          format: uuid
+        assistantName:
+          type: string
+          nullable: true
+        categoryId:
+          type: string
+          format: uuid
+          nullable: true
+        categoryName:
+          type: string
+          nullable: true
+        userId:
+          type: string
+          format: uuid
+        model:
+          type: string
+        userPrompt:
+          type: string
+        output:
+          type: string
+          nullable: true
+        status:
+          $ref: "#/components/schemas/RunStatus"
+        error:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+          nullable: true
+
+    AssistantRunCreateIn:
+      type: object
+      required: [userPrompt]
+      properties:
+        userPrompt:
+          type: string
+          minLength: 1
+
+paths:
+  /_info:
+    get:
+      tags: [System]
+      summary: Healthcheck
+      responses:
+        "200":
+          description: OK
+
+  /dummyLogin:
+    post:
+      tags: [Auth]
+      summary: Получить тестовый JWT
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [role]
+              properties:
+                role:
+                  $ref: "#/components/schemas/Role"
+      responses:
+        "200":
+          description: JWT и пользователь
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Token"
+        "400":
+          description: Некорректный запрос
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /categories:
+    get:
+      tags: [Categories]
+      summary: Список категорий
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Список категорий
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [categories]
+                properties:
+                  categories:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Category"
+        "401":
+          description: Нет авторизации
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    post:
+      tags: [Categories]
+      summary: Создать категорию
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CategoryCreateIn"
+      responses:
+        "201":
+          description: Категория создана
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Category"
+        "403":
+          description: Недостаточно прав
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /assistants:
+    get:
+      tags: [Assistants]
+      summary: Список ассистентов
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: categoryId
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Фильтр по категории
+        - name: q
+          in: query
+          schema:
+            type: string
+          description: Поиск по названию и описанию
+        - name: includeInactive
+          in: query
+          schema:
+            type: boolean
+            default: false
+          description: Фильтр "Показать неактивных ассистентов"; доступен администратору
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+      responses:
+        "200":
+          description: Список ассистентов
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [assistants, pagination]
+                properties:
+                  assistants:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Assistant"
+                  pagination:
+                    $ref: "#/components/schemas/Pagination"
+        "401":
+          description: Нет авторизации
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    post:
+      tags: [Assistants]
+      summary: Создать ассистента
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AssistantCreateIn"
+      responses:
+        "201":
+          description: Ассистент создан
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Assistant"
+        "400":
+          description: Некорректный запрос
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Недостаточно прав
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /assistants/{assistantId}:
+    get:
+      tags: [Assistants]
+      summary: Получить ассистента
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/AssistantIdPath"
+      responses:
+        "200":
+          description: Ассистент
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Assistant"
+        "404":
+          description: Ассистент не найден
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      tags: [Assistants]
+      summary: Обновить ассистента
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/AssistantIdPath"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AssistantUpdateIn"
+      responses:
+        "200":
+          description: Ассистент обновлён
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Assistant"
+        "403":
+          description: Недостаточно прав
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Ассистент не найден
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /assistants/{assistantId}/run:
+    post:
+      tags: [Runs]
+      summary: Запустить ассистента
+      description: Backend использует системный промпт ассистента и пользовательский промпт из тела запроса.
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/AssistantIdPath"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AssistantRunCreateIn"
+      responses:
+        "201":
+          description: Запуск создан или завершён
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AssistantRun"
+        "400":
+          description: Некорректный запрос
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Ассистент выключен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "502":
+          description: Ошибка LLM-провайдера
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /runs/my:
+    get:
+      tags: [Runs]
+      summary: История запусков текущего пользователя
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          schema:
+            $ref: "#/components/schemas/RunStatus"
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        "200":
+          description: История запусков
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [runs, pagination]
+                properties:
+                  runs:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/AssistantRun"
+                  pagination:
+                    $ref: "#/components/schemas/Pagination"
+
+  /admin/runs:
+    get:
+      tags: [Runs]
+      summary: Все запуски ассистентов для администратора
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: assistantId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: status
+          in: query
+          schema:
+            $ref: "#/components/schemas/RunStatus"
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        "200":
+          description: Список запусков
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [runs, pagination]
+                properties:
+                  runs:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/AssistantRun"
+                  pagination:
+                    $ref: "#/components/schemas/Pagination"
+        "403":
+          description: Недостаточно прав
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
