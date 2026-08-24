@@ -1,0 +1,577 @@
+{
+  "info": {
+    "_postman_id": "171dcf92-a4ea-43ce-97c9-920bc89210a8",
+    "name": "qa-internship — Tech Internships 2026",
+    "description": "Коллекция для сервиса qa-internship. Выполняйте запросы по порядку: регистрация → авторизация → создание объявления → чтение статистики и объявления → удаление. Коллекция автоматически создаёт уникальный username и сохраняет sellerID, accessToken и itemId из успешных ответов. Все ручки, кроме register и autorize, используют Bearer {{accessToken}}. sellerID при создании объявления должен совпадать с id пользователя из токена.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Авторизация",
+      "description": "Публичные ручки. Для них Bearer-токен не требуется.",
+      "item": [
+        {
+          "name": "Зарегистрировать пользователя",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/1/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "1",
+                "register"
+              ]
+            },
+            "description": "Создаёт пользователя. Перед запросом генерируется уникальный username. После успешного ответа id автоматически сохраняется в sellerID. Возможные ошибки: 400 — некорректный логин или пароль, 409 — пользователь уже существует."
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "exec": [
+                  "pm.collectionVariables.set('username', `student_${Date.now()}`);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const user = pm.response.json();",
+                  "    pm.collectionVariables.set('sellerID', String(user.id));",
+                  "    pm.collectionVariables.set('username', user.username);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Пользователь зарегистрирован",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"username\": \"seller\",\n  \"password\": \"strong-password\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/1/register",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "1",
+                    "register"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": 123,\n  \"username\": \"seller\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Авторизоваться",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/1/autorize",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "1",
+                "autorize"
+              ]
+            },
+            "description": "Возвращает JWT и автоматически сохраняет его в accessToken. Возможные ошибки: 400 — некорректный запрос, 401 — неверный логин или пароль."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const token = pm.response.json();",
+                  "    pm.collectionVariables.set('accessToken', token.accessToken);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Пользователь авторизован",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"username\": \"seller\",\n  \"password\": \"strong-password\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/1/autorize",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "1",
+                    "autorize"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"accessToken\": \"<JWT>\",\n  \"tokenType\": \"Bearer\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Объявления",
+      "description": "Защищённые ручки. Bearer-токен наследуется из настроек коллекции.",
+      "item": [
+        {
+          "name": "Создать объявление",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sellerID\": {{sellerID}},\n  \"name\": \"{{itemName}}\",\n  \"price\": 9900,\n  \"statistics\": {\n    \"likes\": 21,\n    \"viewCount\": 11,\n    \"contacts\": 43\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/1/item",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "1",
+                "item"
+              ]
+            },
+            "description": "Создаёт объявление. sellerID должен совпадать с id пользователя из Bearer-токена. UUID извлекается из строки status и автоматически сохраняется в itemId. Возможные ошибки: 400 и 401."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const body = pm.response.json();",
+                  "    const match = String(body.status || '').match(/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/i);",
+                  "    if (match) {",
+                  "        pm.collectionVariables.set('itemId', match[0]);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Объявление создано",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"sellerID\": {{sellerID}},\n  \"name\": \"{{itemName}}\",\n  \"price\": 9900,\n  \"statistics\": {\n    \"likes\": 21,\n    \"viewCount\": 11,\n    \"contacts\": 43\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/1/item",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "1",
+                    "item"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": \"Сохранили объявление - 550e8400-e29b-41d4-a716-446655440000\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Получить объявление по идентификатору",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/1/item/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "1",
+                "item",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{itemId}}",
+                  "description": "UUID объявления"
+                }
+              ]
+            },
+            "description": "Возвращает массив из одного объявления. Возможные ответы: 200, 400, 401, 404 и 500."
+          },
+          "response": []
+        },
+        {
+          "name": "Получить объявления продавца",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/1/:sellerID/item",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "1",
+                ":sellerID",
+                "item"
+              ],
+              "variable": [
+                {
+                  "key": "sellerID",
+                  "value": "{{sellerID}}",
+                  "description": "Идентификатор зарегистрированного продавца"
+                }
+              ]
+            },
+            "description": "Возвращает все объявления продавца или пустой массив. Возможные ответы: 200, 400, 401 и 500."
+          },
+          "response": []
+        },
+        {
+          "name": "Удалить объявление",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/2/item/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "2",
+                "item",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{itemId}}",
+                  "description": "UUID объявления"
+                }
+              ]
+            },
+            "description": "Удаляет объявление по UUID. Возможные ответы: 200, 400, 401, 404 и 500."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Статистика",
+      "description": "Обе версии ручки защищены Bearer-токеном.",
+      "item": [
+        {
+          "name": "Получить статистику v1",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/1/statistic/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "1",
+                "statistic",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{itemId}}",
+                  "description": "UUID объявления"
+                }
+              ]
+            },
+            "description": "Возвращает массив со статистикой объявления. Возможные ответы: 200, 400, 401, 404 и 500."
+          },
+          "response": []
+        },
+        {
+          "name": "Получить статистику v2",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/2/statistic/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "2",
+                "statistic",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{itemId}}",
+                  "description": "UUID объявления"
+                }
+              ]
+            },
+            "description": "Вторая версия получения статистики. Возможные ответы по контракту: 100, 200, 401, 404 и 500."
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://qa-internship.avito.com",
+      "type": "string"
+    },
+    {
+      "key": "username",
+      "value": "seller",
+      "type": "string"
+    },
+    {
+      "key": "password",
+      "value": "strong-password",
+      "type": "string"
+    },
+    {
+      "key": "accessToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "sellerID",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "itemId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "itemName",
+      "value": "testItem",
+      "type": "string"
+    }
+  ]
+}
